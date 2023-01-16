@@ -1,11 +1,16 @@
 from lib import kingGizzard as kg
 import chess as ch
 
+# import serial
+
 numToLetterDict = {1: "A", 2: "B", 3: "C", 4: "D", 5: "E", 6: "F", 7: "G", 8: "H"}
 
 
 class Main:
     def __init__(self, board=ch.Board):
+        ## TODO talk about in meeting
+        # self.arduinoData = serial.Serial("com6", 115200)
+
         self.board = board
 
     ## play opponent move
@@ -16,22 +21,15 @@ class Main:
             print("""To undo your last move, type "undo".""")
             ## get user input
             play = input("your move: ")
-
             if play == "undo":
                 self.board.pop()
                 self.board.pop()
                 self.playOpponentMove()
                 return
 
-            self.board.push(self.board.parse_uci(play))
+            self.board.push_san(play)
         except:
-            print("INVALID MOVE... Return piece to previous position")
 
-            # check from Arduino if piece is returned
-            # for now set to dummy variable and skip loop
-            returned = True
-            while not returned:
-                pass
             self.playOpponentMove()
 
     def makeMatrix(self, board):  # type(board) == chess.Board()
