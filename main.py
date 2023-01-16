@@ -34,7 +34,6 @@ class Main:
 
     def makeMatrix(self, board):  # type(board) == chess.Board()
         ## https://stackoverflow.com/questions/55876336/is-there-a-way-to-convert-a-python-chess-board-into-a-list-of-integers
-
         ## returns 2d array with board
 
         pgn = board.epd()
