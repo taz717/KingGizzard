@@ -18,6 +18,14 @@ class KingGizzard:
         self.maxDepth = maxDepth
         self.color = color
 
+    def concede(self):
+        """
+        concedes the game
+        parems: none
+        returns: boolean
+        """
+        return True
+
     def get_best_move(self):
         """
         returns the best move for the engine
@@ -61,7 +69,7 @@ class KingGizzard:
         if self.board.legal_moves.count() == 0:
             ## engine getting checked
             if self.board.turn == self.color:
-                -999
+                return -999
 
             else:
                 ## opponent getting checked
@@ -107,9 +115,12 @@ class KingGizzard:
         parems: candidate (float), depth (int)
         returns: value (float)
         """
-        if depth == self.maxDepth or self.board.legal_moves.count() == 0:
+        # if depth == self.maxDepth - 1 or self.board.legal_moves.count() == 0:
+        #     return self.evaluate()
+        if depth == self.maxDepth - 1:
             return self.evaluate()
-
+        elif self.board.legal_moves.count() == 0:
+            return self.concede()
         else:
             ## list of legal moves for the current board
             moveList = list(self.board.legal_moves)
@@ -134,6 +145,7 @@ class KingGizzard:
                 ## basic
 
                 ## if maxim (engine turn)
+
                 if value > newCandidate and depth % 2 != 0:
                     newCandidate = value
                     if depth == 1:

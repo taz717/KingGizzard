@@ -42,3 +42,10 @@ https://www.chessprogramming.org/Hans_Berliner
 - TODO start working on translater
 - TODO issues where AI would creash at depth 7+
 - TODO figure out issue where game is not detecting mate
+
+#### v2.01
+- add to state control to board to reset better
+- add stalemate detection
+- add player vs ai win detection
+- fix checkmate crash
+- TODO depth 7+ crash
