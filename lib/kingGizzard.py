@@ -2,23 +2,48 @@ import chess as ch
 import random as rd
 
 
-class kingGizzard:
+class KingGizzard:
+    """
+    King Gizzard is a chess engine that uses the minimax algorithm
+    to evaluate the best move for the engine.
+    """
+
     def __init__(self, board, maxDepth, color):
+        """
+        initializes the engine
+        parems: board (chess.Board), maxDepth (int), color (chess.Color)
+        returns: none
+        """
         self.board = board
         self.maxDepth = maxDepth
         self.color = color
 
-    def getBestMove(self):
+    def get_best_move(self):
+        """
+        returns the best move for the engine
+        parems: none
+        returns: best move (chess.Move)
+        """
         return self.engine(None, 1)
 
     def evaluate(self):
+        """
+        returns the value of the current board
+        parems: none
+        returns: value (float)
+        """
         compt = 0
         for i in range(64):
-            compt += self.squareResPoints(ch.SQUARES[i])
-        compt += self.mateOppurtunity() + self.opening() + 0.001 * rd.random()
+            compt += self.square_res_points(ch.SQUARES[i])
+        compt += self.mate_oppurtunity() + self.opening() + 0.001 * rd.random()
         return compt
 
     def opening(self):
+        """
+        returns a value for the opening
+        parems: none
+        returns: value (float)
+        """
         if self.board.fullmove_number < 10:
             if self.board.turn == self.color:
                 return 1 / 30 * self.board.legal_moves.count()
@@ -27,7 +52,12 @@ class kingGizzard:
         else:
             return 0
 
-    def mateOppurtunity(self):
+    def mate_oppurtunity(self):
+        """
+        returns a value for the mate oppurtunity
+        parems: none
+        returns: value (float)
+        """
         if self.board.legal_moves.count() == 0:
             ## engine getting checked
             if self.board.turn == self.color:
@@ -44,7 +74,12 @@ class kingGizzard:
     ## takes a square as input and returns
     ## Han's Berlinder's system value of its resident
     ## https://www.chessprogramming.org/Hans_Berliner
-    def squareResPoints(self, square):
+    def square_res_points(self, square):
+        """
+        returns the value of a piece on a square
+        parems: square (chess.SQUARE)
+        returns: value (float)
+        """
         pieceValue = 0
         if self.board.piece_type_at(square) == ch.PAWN:
             pieceValue = 1
@@ -63,6 +98,15 @@ class kingGizzard:
             return pieceValue
 
     def engine(self, candidate, depth):
+        """
+        checks for moves, evaluates them and returns the best one
+        essentially its main function.
+
+        uses alpha-beta pruning to reduce the number of nodes to be evaluated
+
+        parems: candidate (float), depth (int)
+        returns: value (float)
+        """
         if depth == self.maxDepth or self.board.legal_moves.count() == 0:
             return self.evaluate()
 
@@ -86,7 +130,7 @@ class kingGizzard:
                 ## get value
                 value = self.engine(newCandidate, depth + 1)
 
-                ## minmax without pruning
+                ## minmax
                 ## basic
 
                 ## if maxim (engine turn)
