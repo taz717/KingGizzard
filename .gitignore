@@ -1,6 +1,7 @@
 
-AI/lichess.pgn
-AI/lichess.zst
+./AI/lichess.pgn
+./AI/lichess.zst
+./.vccode
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

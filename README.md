@@ -1,5 +1,5 @@
 # HackED2023LizardWizards - AI
-## Moataz (Taz) Khallaf & Gordan Chi
+## Moataz (Taz) Khallaf & Gordon Chi
 ### What is this?
 This is a python programmed non ml chess ai made as a smaller part of my main project in HackED2023.
 
