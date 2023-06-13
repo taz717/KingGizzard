@@ -1,4 +1,4 @@
-from lib import KingGizzard as kg
+from lib import kingGizzard as kg
 import chess as ch
 
 numToLetterDict = {1: "A", 2: "B", 3: "C", 4: "D", 5: "E", 6: "F", 7: "G", 8: "H"}
@@ -16,6 +16,9 @@ class Main:
         returns: none
         """
         self.board = board
+        self.gameState = True
+        self.kingWon = False
+        self.playerWon = False
 
     ## play opponent move
     def play_opponent_move(self):
@@ -27,7 +30,12 @@ class Main:
         """
         try:
             ## Don't list this, it doesn't look as nice
+
             print(self.board.legal_moves)
+
+            if self.board.is_checkmate() == True:
+                self.kingWon = True
+
             print("""To undo your last move, type "undo".""")
             ## get user input
             play = input("your move: ")
@@ -89,8 +97,13 @@ class Main:
         returns: none but it does add the engine's move to
         the board object
         """
+        win = True
         engine = kg.KingGizzard(self.board, maxDepth, color)
-        self.board.push(engine.get_best_move())
+        move = engine.get_best_move()
+        if move == True:
+            self.playerWon = True
+        else:
+            self.board.push(engine.get_best_move())
 
     def translate_boards(self, previousTurn):
         """
@@ -142,15 +155,45 @@ class Main:
                 print(vals)
 
             print(self.board)
-            print(self.board.outcome())
 
-            ## reset the board
-            self.board.reset
-            ## start new game
-            self.start_game()
+            matchEnd = self.board.outcome()
+
+            if matchEnd.termination.value == 2:
+                print("Stalemate! No one wins...")
+            elif self.kingWon == True:
+                print("King Gizzard the great has won!")
+            elif self.playerWon == True:
+                print("I can't believe that I've lost to a human...")
+
+            # print(self.board.outcome())
+
+        ## ask if user wants to play again
+        self.gameState = input("Play again? (y/n): ")
+        self.kingWon = False
+        self.playerWon = False
+        return self.gameState
+        # ## reset the board
+        # self.board.reset
+        # ## start new game
+        # self.start_game()
 
 
 if __name__ == "__main__":
-    newBoard = ch.Board()
+    # Fresh Board
+    # newBoard = ch.Board()
+    # Mate in 2
+    newBoard = ch.Board("1n4k1/r5np/1p4PB/p1p5/2q3P1/2P4P/8/4QRK1")
+    # Mate in 1
+    # newBoard = ch.Board("k7/ppp5/8/8/8/8/3Q4/4RK2")
+    # Stalemate check
+    # board = chess.Board("k7/8/8/8/8/8/5q2/7K")
+
     game = Main(newBoard)
     game.start_game()
+
+    if game.gameState == "y":
+        game.board.reset()
+        game.start_game()
+
+    print("Thanks for playing!")
+    exit()
