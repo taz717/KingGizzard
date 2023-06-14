@@ -29,14 +29,13 @@ class Main:
         the board object
         """
         try:
-            ## Don't list this, it doesn't look as nice
-
             print(self.board.legal_moves)
 
             if self.board.is_checkmate() == True:
                 self.kingWon = True
 
             print("""To undo your last move, type "undo".""")
+
             ## get user input
             play = input("your move: ")
             if play == "undo":
@@ -56,9 +55,7 @@ class Main:
         returns: matrix (2d array)
         """
 
-        # type(board) == chess.Board()
         ## https://stackoverflow.com/questions/55876336/is-there-a-way-to-convert-a-python-chess-board-into-a-list-of-integers
-        ## returns 2d array with board
 
         pgn = board.epd()
         foo = []  # Final board
@@ -165,17 +162,11 @@ class Main:
             elif self.playerWon == True:
                 print("I can't believe that I've lost to a human...")
 
-            # print(self.board.outcome())
-
         ## ask if user wants to play again
         self.gameState = input("Play again? (y/n): ")
         self.kingWon = False
         self.playerWon = False
         return self.gameState
-        # ## reset the board
-        # self.board.reset
-        # ## start new game
-        # self.start_game()
 
 
 if __name__ == "__main__":
@@ -189,11 +180,12 @@ if __name__ == "__main__":
     # board = chess.Board("k7/8/8/8/8/8/5q2/7K")
 
     game = Main(newBoard)
-    game.start_game()
+    print(game.make_matrix(newBoard))
+    # game.start_game()
 
-    if game.gameState == "y":
-        game.board.reset()
-        game.start_game()
+    # if game.gameState == "y":
+    #     game.board.reset()
+    #     game.start_game()
 
-    print("Thanks for playing!")
-    exit()
+    # print("Thanks for playing!")
+    # exit()
