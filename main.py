@@ -46,6 +46,7 @@ class Main:
                 return
 
             self.board.push_san(play)
+            print(self.board.fen())
         except:
             self.play_opponent_move()
 
@@ -141,6 +142,7 @@ class Main:
 
             print(self.board)
             print(self.board.outcome())
+
         elif color == "w":
             while self.board.is_checkmate() == False:
                 print(self.board)
@@ -180,13 +182,16 @@ class Main:
 
 if __name__ == "__main__":
     # Fresh Board
-    # newBoard = ch.Board()
+    #newBoard = ch.Board()
+    
     # Mate in 2
-    newBoard = ch.Board("1n4k1/r5np/1p4PB/p1p5/2q3P1/2P4P/8/4QRK1")
+    #newBoard = ch.Board("1n4k1/r5np/1p4PB/p1p5/2q3P1/2P4P/8/4QRK1")
     # Mate in 1
-    # newBoard = ch.Board("k7/ppp5/8/8/8/8/3Q4/4RK2")
+    newBoard = ch.Board("k7/ppp5/8/8/8/8/3Q4/4RK2")
     # Stalemate check
     # board = chess.Board("k7/8/8/8/8/8/5q2/7K")
+    #newBoard = ch.Board("r3k2r/pppppppp/8/8/8/8/PPPPPPPP/R3K2R")
+    newBoard.set_castling_fen("QKqk")
 
     game = Main(newBoard)
     game.start_game()
