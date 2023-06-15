@@ -66,7 +66,7 @@ class Main:
             for thing in row:
                 if thing.isdigit():
                     for i in range(0, int(thing)):
-                        foo2.append(".")
+                        foo2.append(" ")
                 else:
                     foo2.append(thing)
             foo.append(foo2)
@@ -108,6 +108,8 @@ class Main:
         parems: previousTurn (chess.Board)
         returns: none
         """
+
+        
         print(previousTurn == self.board)
 
     def start_game(self):
@@ -150,7 +152,7 @@ class Main:
                 vals = self.compare_boards(previousBoard, self.make_matrix(self.board))
                 ## TODO SEND VALS TO ARDUINO TO MOVE PIECES
                 print(vals)
-
+                print(self.make_matrix(newBoard))
             print(self.board)
 
             matchEnd = self.board.outcome()

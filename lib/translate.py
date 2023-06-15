@@ -1,4 +1,4 @@
-class translater:
+class translator:
     def __init__(self):
         self.numToLetterDict = {
             1: "a",
@@ -51,9 +51,13 @@ class translater:
         move = ""
 
         startPiece = change[0][0].upper()
+        print (startPiece)
         start = change[0][1]
+        print (start)
         endPiece = change[1][0].upper()
+        print (endPiece)
         end = change[1][1]
+        print (end)
 
         ## king side castle
         if (
@@ -98,13 +102,13 @@ if __name__ == "__main__":
         ["R", "N", "B", "K", "Q", "B", "N", "R"],
         ["P", "P", " ", "P", "P", "P", "P", "P"],
         [" ", " ", " ", " ", " ", " ", " ", " "],
-        [" ", " ", " ", " ", " ", " ", " ", " "],
+        [" ", " ", "P", " ", " ", " ", " ", " "],
         [" ", " ", " ", " ", " ", " ", " ", " "],
         [" ", " ", " ", " ", " ", " ", " ", " "],
         ["p", "p", "p", "p", "p", "p", "p", "p"],
         ["r", "n", "b", "k", "q", "b", "n", "r"],
     ]
 
-    t = translater()
+    t = translator()
     # print(t.compare_boards(t.boardCurrent, testMoveBoard))
     print(t.calculate_move(t.compare_boards(t.boardCurrent, testMoveBoard)))
