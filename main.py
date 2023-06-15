@@ -173,19 +173,23 @@ if __name__ == "__main__":
     # Fresh Board
     # newBoard = ch.Board()
     # Mate in 2
-    newBoard = ch.Board("1n4k1/r5np/1p4PB/p1p5/2q3P1/2P4P/8/4QRK1")
+    # newBoard = ch.Board("1n4k1/r5np/1p4PB/p1p5/2q3P1/2P4P/8/4QRK1")
+
+    # white and black can castle on queen or king side
+    newBoard = ch.Board("r3k2r/pppppppp/8/8/8/8/PPPPPPPP/R3K2R")
+
     # Mate in 1
     # newBoard = ch.Board("k7/ppp5/8/8/8/8/3Q4/4RK2")
     # Stalemate check
     # board = chess.Board("k7/8/8/8/8/8/5q2/7K")
 
     game = Main(newBoard)
-    print(game.make_matrix(newBoard))
-    # game.start_game()
+    # print(game.make_matrix(newBoard))
+    game.start_game()
 
-    # if game.gameState == "y":
-    #     game.board.reset()
-    #     game.start_game()
+    if game.gameState == "y":
+        game.board.reset()
+        game.start_game()
 
-    # print("Thanks for playing!")
-    # exit()
+    print("Thanks for playing!")
+    exit()
