@@ -176,6 +176,7 @@ class Main:
         # self.board.reset
         # ## start new game
         # self.start_game()
+       
 
 
 if __name__ == "__main__":
