@@ -37,14 +37,13 @@ class Main:
         the board object
         """
         try:
-            ## Don't list this, it doesn't look as nice
-
             print(self.board.legal_moves)
 
             if self.board.is_checkmate() == True:
                 self.kingWon = True
 
             print("""To undo your last move, type "undo".""")
+
             ## get user input
             play = input("your move: ")
             if play == "undo":
@@ -64,9 +63,7 @@ class Main:
         returns: matrix (2d array)
         """
 
-        # type(board) == chess.Board()
         ## https://stackoverflow.com/questions/55876336/is-there-a-way-to-convert-a-python-chess-board-into-a-list-of-integers
-        ## returns 2d array with board
 
         pgn = board.epd()
         foo = []  # Final board
@@ -77,7 +74,7 @@ class Main:
             for thing in row:
                 if thing.isdigit():
                     for i in range(0, int(thing)):
-                        foo2.append(".")
+                        foo2.append(" ")
                 else:
                     foo2.append(thing)
             foo.append(foo2)
@@ -121,6 +118,8 @@ class Main:
         parems: previousTurn (chess.Board)
         returns: none
         """
+
+        
         print(previousTurn == self.board)
 
     def start_game(self):
@@ -170,10 +169,6 @@ class Main:
                 # board on the translator as appropriate (confirming it from
                 # visual data from openCV image)
                 print(vals)
-<<<<<<< Updated upstream
-
-=======
->>>>>>> Stashed changes
             print(self.board)
 
             matchEnd = self.board.outcome()
@@ -185,19 +180,11 @@ class Main:
             elif self.playerWon == True:
                 print("I can't believe that I've lost to a human...")
 
-            # print(self.board.outcome())
-
         ## ask if user wants to play again
         self.gameState = input("Play again? (y/n): ")
         self.kingWon = False
         self.playerWon = False
         return self.gameState
-<<<<<<< Updated upstream
-        # ## reset the board
-        # self.board.reset
-        # ## start new game
-        # self.start_game()
-=======
     
     def frame_comparison(self):
        
@@ -234,19 +221,15 @@ class Main:
 
         # cap.release()
         # cv2.destroyAllWindows()
+        
+
         ret, frame = cap.read()
-        if not ret:
-            print("Error capturing frame")
-
-
-
+    
         while True:
-            
             cv2.resize(frame, (600, 600))
             cv2.imshow("Webcam", frame)
             grey1 = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
             grey1_resized = cv2.resize(grey1, (600, 600))
-            cv2.imwrite("old_frame.png", frame)
 
             # Push 'c' to capture
             key = cv2.waitKey(1)
@@ -266,8 +249,6 @@ class Main:
 
                 is_diff = np.all((diff == 0) | (diff == 255))
 
-                cv2.imshow("blah", grey1_resized)
-                cv2.imshow("bloo", grey2_resized)
                 if not is_diff:
                     cv2.imshow("Difference", diff)
                     frame = new_frame
@@ -282,22 +263,17 @@ class Main:
         cap.release()
         cv2.destroyAllWindows()
 
->>>>>>> Stashed changes
 
 
 if __name__ == "__main__":
     # Fresh Board
     newBoard = ch.Board()
     # Mate in 2
-<<<<<<< Updated upstream
-    newBoard = ch.Board("1n4k1/r5np/1p4PB/p1p5/2q3P1/2P4P/8/4QRK1")
-=======
     # newBoard = ch.Board("1n4k1/r5np/1p4PB/p1p5/2q3P1/2P4P/8/4QRK1")
 
     # white and black can castle on queen or king side
     #newBoard = ch.Board("r3k2r/pppppppp/8/8/8/8/PPPPPPPP/R3K2R")
 
->>>>>>> Stashed changes
     # Mate in 1
     #newBoard = ch.Board("k7/ppp5/8/8/8/8/3Q4/4RK2")
     # Stalemate check
@@ -306,15 +282,12 @@ if __name__ == "__main__":
 
 
     game = Main(newBoard)
-<<<<<<< Updated upstream
-=======
     print(game.make_matrix(newBoard))
 
     t = threading.Thread(target=game.frame_comparison)
     t. start()
 
 
->>>>>>> Stashed changes
     game.start_game()
 
     if game.gameState == "y":
