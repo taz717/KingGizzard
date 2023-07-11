@@ -1,6 +1,6 @@
 import cv2 
 import numpy as np
-from PIL import ImageGrab
+
 
 
 def frame_comparison():
@@ -25,15 +25,40 @@ def frame_comparison():
     grey_2 = cv2.cvtColor(image2, cv2.COLOR_BGR2GRAY)
     grey_2_resized = cv2.resize(grey_2, (600, 600))
     diff = cv2.absdiff (grey_1_resized, grey_2_resized)
+    
 
-    is_diff = np.all((diff == 0) | (diff == 255))
+    _, threshold = cv2.threshold(diff, 30, 255, cv2.THRESH_BINARY)
+    # Find contours of the changed regions
+    contours, _ = cv2.findContours(threshold, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
-    if not is_diff: 
-        cv2.imshow("Difference", diff)
-    else:
-        print ("No difference in images")
+    # Get the bounding boxes of the changed regions
+    bounding_boxes = [cv2.boundingRect(cnt) for cnt in contours]
+
+    # Draw rectangles around the changed regions on the images
+    for x, y, w, h in bounding_boxes:
+        cv2.rectangle(diff, (x, y), (x + w, y + h), (255, 255, 255), 2)
+        
+
+    # Display the images with the changed regions highlighted
+    cv2.imshow("Image 1", grey_1_resized)
+    cv2.imshow("Image 2", grey_2_resized)
+    cv2.imshow("Difference", diff)
+
     cv2.waitKey(0)
-    cv2.destroyAllWindows
+    cv2.destroyAllWindows()
+
+
+
+
+
+    # is_diff = np.all((diff == 0) | (diff == 255))
+
+    # if not is_diff: 
+    #     cv2.imshow("Difference", diff)
+    # else:
+    #     print ("No difference in images")
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows
 
     return
 

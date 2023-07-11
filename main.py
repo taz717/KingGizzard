@@ -226,6 +226,7 @@ class Main:
         ret, frame = cap.read()
     
         while True:
+            
             cv2.resize(frame, (600, 600))
             cv2.imshow("Webcam", frame)
             grey1 = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -250,6 +251,18 @@ class Main:
                 is_diff = np.all((diff == 0) | (diff == 255))
 
                 if not is_diff:
+                    
+                    _, threshold = cv2.threshold(diff, 30, 255, cv2.THRESH_BINARY)
+
+                    contours, _ = cv2.findContours(threshold, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+                    
+
+                    bounding_box = [cv2.boundingRect(cnt) for cnt in contours]
+
+                    for x, y, w, h in bounding_box:
+                        cv2.rectangle(diff, (x,y), (x + w, y + h), (255, 255, 255), 1)
+                        cv2.imshow("Difference", diff)
+
                     cv2.imshow("Difference", diff)
                     frame = new_frame
                 else:
