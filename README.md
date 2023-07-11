@@ -5,7 +5,7 @@ This is a python programmed non ml chess ai made as a smaller part of my main pr
 
 ### REVISED
 This AI is now being used for a MacEwan CMPT 496 capstone project lead by Taz Khallaf, Bob Blinde
-Gordan Chi and Travis Mund
+Gordon Chi and Travis Mundy
 
 ### How to use?
 - make sure you have python installed
