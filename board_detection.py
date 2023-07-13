@@ -5,6 +5,20 @@ import glob
  
 # Defining the dimensions of checkerboard
 CHECKERBOARD = (7,7)
+'''
+# TODO create class that will contain the spaces
+class ChessBoard:
+    def __init__(self, spaces):
+
+
+def get_space(grid):
+    squares = {}
+    col = 1
+    Names = ['A','B','C','D','E','F', 'G','H']
+    for i in range(len(grid['0']) - 1 ):
+        if (i == 0 or i == 1):
+'''           
+
 def draw_points(grid):
     img = cv2.imread("images/new_frame.png")
     for key in grid:
@@ -14,28 +28,46 @@ def draw_points(grid):
     cv2.waitKey(0)
     
     cv2.destroyAllWindows()
-def get_missing_col_row(grid):
-    yDiff =  grid["2"][0][1] - grid['1'][0][1]
-    xDiff=  grid["1"][1][0] - grid['1'][0][0]
-    col1X =  grid['1'][0][0] - xDiff
-    col8X =  grid['1'][6][0] + xDiff
-    row1Y =  grid['1'][0][1] - yDiff
-    row8Y = grid["7"][0][1] + yDiff
-    #add points to the columns that are unmarked
-    for key in grid:
-        grid[key].append((col1X, grid[key][0][1]))
-        grid[key].append((col8X, grid[key][0][1]))
 
-    grid['0'] = []
-    grid['8'] = []
-    #add points the the last two rows 
+def get_average_y(grid):
+    avgY = []
+     #y vals  for each key all 7 vals  in each row
+    for key in grid:
+        y = 0
+        for i in grid[key]:
+            y += grid[key][1][1]
+        avgY.append(y//7)
+    return avgY
+   
+def get_average_x(grid):
+    avgX = []
+    #x vals I need 7 keys and the index in each col
     for i in range(len(grid['1'])):
-        grid['0'].append((grid['1'][i][0], row1Y))
-        grid['8'].append((grid['1'][i][0], row8Y)) 
-        
-                #First iteration go back by 1 and from that 
+        x = 0
+        for key in grid:
+            x +=  grid[key][i][0]
+        avgX.append(x//7)
+    return  avgX
+
+def get_board(grid, avgX, avgY):
+    yDiff =  avgY[1] - avgY[0]
+    xDiff=  avgX[1] - avgX[0]
+    avgX.insert(0,(avgX[0] - xDiff))
+    avgX.append(avgX[7] + xDiff)
+    avgY.insert(0, (avgY[0] - yDiff))
+    avgY.append(avgY[7] + yDiff)
+    col = 0 
+    grid.clear()
+    for y in avgY:
+        grid[str(col)] = []
+        for x in avgX:
+            grid[str(col)].append((x,y))
+        col +=1 
+
     return grid
-def get_board():
+   
+
+def get_grid():
     criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
     
     # Creating vector to store vectors of 3D points for each checkerboard image
@@ -56,12 +88,7 @@ def get_board():
         # Find the chess board corners
         # If desired number of corners are found in the image then ret = true
         ret, corners = cv2.findChessboardCorners(gray, CHECKERBOARD, cv2.CALIB_CB_ADAPTIVE_THRESH + cv2.CALIB_CB_FAST_CHECK + cv2.CALIB_CB_NORMALIZE_IMAGE)
-        
-        """
-        If desired number of corner are detected,
-        we refine the pixel coordinates and display 
-        them on the images of checker board
-        """
+
         if ret == True:
             objpoints.append(objp)
             # refining pixel coordinates for given 2d points.
@@ -83,8 +110,9 @@ def get_board():
                 else:
                     grid[str(row)].append((int(x),int(y)))
                 
-           
-    grid = get_missing_col_row(grid)
+    y = get_average_y(grid)
+    x = get_average_x(grid)
+    grid = get_board(grid, x, y)
     draw_points(grid)
 
     return(grid)
@@ -92,7 +120,7 @@ def get_board():
 
     
 def main():
-    print(get_board())
+    get_grid()
 
 
 main()
