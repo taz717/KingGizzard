@@ -1,4 +1,4 @@
-from lib import kingGizzard as kg
+from src import kingGizzard as kg
 import chess as ch
 import cv2
 import time
