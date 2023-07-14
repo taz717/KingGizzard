@@ -29,14 +29,13 @@ class Main:
         the board object
         """
         try:
-            ## Don't list this, it doesn't look as nice
-
             print(self.board.legal_moves)
 
             if self.board.is_checkmate() == True:
                 self.kingWon = True
 
             print("""To undo your last move, type "undo".""")
+
             ## get user input
             play = input("your move: ")
             if play == "undo":
@@ -56,9 +55,7 @@ class Main:
         returns: matrix (2d array)
         """
 
-        # type(board) == chess.Board()
         ## https://stackoverflow.com/questions/55876336/is-there-a-way-to-convert-a-python-chess-board-into-a-list-of-integers
-        ## returns 2d array with board
 
         pgn = board.epd()
         foo = []  # Final board
@@ -69,7 +66,7 @@ class Main:
             for thing in row:
                 if thing.isdigit():
                     for i in range(0, int(thing)):
-                        foo2.append(".")
+                        foo2.append(" ")
                 else:
                     foo2.append(thing)
             foo.append(foo2)
@@ -111,6 +108,7 @@ class Main:
         parems: previousTurn (chess.Board)
         returns: none
         """
+
         print(previousTurn == self.board)
 
     def start_game(self):
@@ -153,7 +151,7 @@ class Main:
                 vals = self.compare_boards(previousBoard, self.make_matrix(self.board))
                 ## TODO SEND VALS TO ARDUINO TO MOVE PIECES
                 print(vals)
-
+                print(self.make_matrix(newBoard))
             print(self.board)
 
             matchEnd = self.board.outcome()
@@ -165,30 +163,29 @@ class Main:
             elif self.playerWon == True:
                 print("I can't believe that I've lost to a human...")
 
-            # print(self.board.outcome())
-
         ## ask if user wants to play again
         self.gameState = input("Play again? (y/n): ")
         self.kingWon = False
         self.playerWon = False
         return self.gameState
-        # ## reset the board
-        # self.board.reset
-        # ## start new game
-        # self.start_game()
 
 
 if __name__ == "__main__":
     # Fresh Board
-    # newBoard = ch.Board()
+    newBoard = ch.Board()
     # Mate in 2
-    newBoard = ch.Board("1n4k1/r5np/1p4PB/p1p5/2q3P1/2P4P/8/4QRK1")
+    # newBoard = ch.Board("1n4k1/r5np/1p4PB/p1p5/2q3P1/2P4P/8/4QRK1")
+
+    # white and black can castle on queen or king side
+    # newBoard = ch.Board("r3k2r/pppppppp/8/8/8/8/PPPPPPPP/R3K2R")
+
     # Mate in 1
     # newBoard = ch.Board("k7/ppp5/8/8/8/8/3Q4/4RK2")
     # Stalemate check
     # board = chess.Board("k7/8/8/8/8/8/5q2/7K")
 
     game = Main(newBoard)
+    # print(game.make_matrix(newBoard))
     game.start_game()
 
     if game.gameState == "y":
