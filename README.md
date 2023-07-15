@@ -18,19 +18,33 @@ Gordan Chi and Travis Mundy
 - python_chess
 - random
 
-#### Python naming convetions used
-https://peps.python.org/pep-0008/
+#### Debugging aid
+https://stackoverflow.com/questions/55876336/is-there-a-way-to-convert-a-python-chess-board-into-a-list-of-integers \
+https://www.chessprogramming.org/Hans_Berliner
+
+#### Chess notation
+
+https://www.chess.com/article/view/chess-notation
 
 ##### TLDR
+
+x: captures
+0-0: kingside castle
+0-0-0: queenside castle
++: check
+#: checkmate
+!: good move
+?: poor move
+
+### Python naming convetions used
+https://peps.python.org/pep-0008/
+
+#### TLDR
 - classes use CapWords
 - functions use snake_case
 - methods use snake_case
 - constants use SNAKE_CAP_WORDS
 - vars use camelCase
-
-#### Debugging aid
-https://stackoverflow.com/questions/55876336/is-there-a-way-to-convert-a-python-chess-board-into-a-list-of-integers
-https://www.chessprogramming.org/Hans_Berliner
 
 ### Updates
 #### V1.00
@@ -48,4 +62,4 @@ https://www.chessprogramming.org/Hans_Berliner
 - add stalemate detection
 - add player vs ai win detection
 - fix checkmate crash
-- TODO depth 7+ crash
+- fix depth 7+ crash
