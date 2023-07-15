@@ -92,8 +92,6 @@ class Main:
                 if matrix1[i][j] != matrix2[i][j]:
                     vals.append(numToLetterDict[j + 1] + str(i + 1))
                 
-
-        print (vals)
         return vals
 
     ## play king gizzard move
