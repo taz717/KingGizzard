@@ -176,3 +176,4 @@ class KingGizzard:
             return newCandidate
         else:
             return move
+
