@@ -17,6 +17,15 @@ class KingGizzard:
         self.board = board
         self.maxDepth = maxDepth
         self.color = color
+        self.pieceValues = {
+            ch.PAWN: 1,
+            ch.KNIGHT: 3.2,
+            ch.BISHOP: 3.33,
+            ch.ROOK: 5.1,
+            ch.QUEEN: 8.8,
+            ch.KING: 0,
+            0: 0,
+        }
 
     def concede(self):
         """
@@ -88,17 +97,10 @@ class KingGizzard:
         parems: square (chess.SQUARE)
         returns: value (float)
         """
-        pieceValue = 0
-        if self.board.piece_type_at(square) == ch.PAWN:
-            pieceValue = 1
-        elif self.board.piece_type_at(square) == ch.KNIGHT:
-            pieceValue = 3.2
-        elif self.board.piece_type_at(square) == ch.BISHOP:
-            pieceValue = 3.33
-        elif self.board.piece_type_at(square) == ch.ROOK:
-            pieceValue = 5.1
-        elif self.board.piece_type_at(square) == ch.QUEEN:
-            pieceValue = 8.8
+        if self.board.piece_type_at(square) == None:
+            pieceValue = 0
+        else:
+            pieceValue = self.pieceValues[self.board.piece_type_at(square)]
 
         if self.board.color_at(square) != self.color:
             return -pieceValue
