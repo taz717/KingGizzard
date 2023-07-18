@@ -6,8 +6,6 @@ import threading
 import numpy as np
 
 
-
-
 numToLetterDict = {1: "A", 2: "B", 3: "C", 4: "D", 5: "E", 6: "F", 7: "G", 8: "H"}
 
 
@@ -26,7 +24,7 @@ class Main:
         self.gameState = True
         self.kingWon = False
         self.playerWon = False
-
+        self.centroids = []
     
     ## play player move
     def play_player_move(self):
@@ -102,6 +100,9 @@ class Main:
         returns: none but it does add the engine's move to
         the board object
         """
+        # cap = cv2.VideoCapture(0)
+        # ret, frame = cap.read()
+        # self.board = frame
         win = True
         engine = kg.KingGizzard(self.board, maxDepth, color)
         move = engine.get_best_move()
@@ -109,6 +110,7 @@ class Main:
             self.playerWon = True
         else:
             self.board.push(engine.get_best_move())
+        # cv2.imshow("AFTER OPPONENT MOVE", frame)
 
     def translate_boards(self, previousTurn):
         """
@@ -120,15 +122,17 @@ class Main:
         
         print(previousTurn == self.board)
 
-    def start_game(self):
+    def start_game(self, cap):
         """
         starts the game
         parems: none
         returns: none
         """
 
+        ret, frame = cap.read()
 
-
+        self.oldFrame = frame
+        
         ## get opponent color
         color = None
         while color not in ["w", "b"]:
@@ -182,47 +186,14 @@ class Main:
         self.gameState = input("Play again? (y/n): ")
         self.kingWon = False
         self.playerWon = False
+        cv2.destroyAllWindows()
         return self.gameState
     
-    def frame_comparison(self):
-       
-        cap = cv2.VideoCapture(0)
-
-        # prev_frame = None
-        # capture_interval = 5
-        # last_capture_time = time.time()
-
-        # while True:
-        #     ret, frame = cap.read()
-        #     if not ret:
-        #         print("Error capturing frame")
-        #         break
-
-            
-        #     if prev_frame is not None:
-        #         grey_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        #         grey_frame_resized = cv2.resize(grey_frame, (600, 600))
-        #         diff = cv2.absdiff(grey_frame_resized, prev_frame)
-
-        #         cv2.imshow("Difference", diff)
-
-        #     prev_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        #     prev_frame = cv2.resize(prev_frame, (600, 600))
-
-            
-        #     current_time = time.time()
-        #     if current_time - last_capture_time >= capture_interval:
-        #         last_capture_time = current_time
-
-        #     if cv2.waitKey(1) & 0xFF == ord('q'):
-        #         break
-
-        # cap.release()
-        # cv2.destroyAllWindows()
-        
-
+    def frame_comparison(self, cap):
+         
         ret, frame = cap.read()
-    
+
+
         while True:
             
             cv2.resize(frame, (600, 600))
@@ -254,12 +225,21 @@ class Main:
 
                     contours, _ = cv2.findContours(threshold, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
                     
-
-                    bounding_box = [cv2.boundingRect(cnt) for cnt in contours]
-
+                    small_movement_bound = 100
+                    bounding_box = [cv2.boundingRect(cnt) for cnt in contours if cv2.contourArea(cnt) > small_movement_bound]
+                    num = 1
+                    
                     for x, y, w, h in bounding_box:
+                        centroid_x = x + (w // 2)
+                        centroid_y = y + (h // 2)
+                        centroid = (centroid_x, centroid_y)
+                        self.centroids.append(centroid)
+                        cv2.circle(diff, centroid, 2, (255,255,255), 1)
+                        text = "Centroid: " + str(num)
+                        cv2.putText(diff, text, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
                         cv2.rectangle(diff, (x,y), (x + w, y + h), (255, 255, 255), 1)
                         cv2.imshow("Difference", diff)
+                        num=num+1
 
                     cv2.imshow("Difference", diff)
                     frame = new_frame
@@ -267,18 +247,31 @@ class Main:
                     print ("No changes yet")
 
 
+
+            if key == ord('p'):
+                for i in self.centroids:
+                    print("Centroids: ", i)
+                print(len(self.centroids))
+                print('f')
+
+
             # Push 'q' to quit
             if key == ord('q'):
                 break
 
+            
+
         cap.release()
         cv2.destroyAllWindows()
+
+        return
 
 
 
 if __name__ == "__main__":
     # Fresh Board
     newBoard = ch.Board()
+    
     # Mate in 2
     # newBoard = ch.Board("1n4k1/r5np/1p4PB/p1p5/2q3P1/2P4P/8/4QRK1")
 
@@ -290,20 +283,21 @@ if __name__ == "__main__":
     # Stalemate check
     # board = chess.Board("k7/8/8/8/8/8/5q2/7K")
 
-
+    cap = cv2.VideoCapture(0)
 
     game = Main(newBoard)
-    print(game.make_matrix(newBoard))
 
-    t = threading.Thread(target=game.frame_comparison)
-    t. start()
+    t = threading.Thread(target=game.frame_comparison, args=(cap,))
+    t.start()
 
 
-    game.start_game()
+    game.start_game(cap)
 
     if game.gameState == "y":
         game.board.reset()
-        game.start_game()
+        game.start_game(cap)
 
+
+    t.join()
     print("Thanks for playing!")
 
