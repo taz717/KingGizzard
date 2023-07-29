@@ -119,7 +119,6 @@ class Main:
         returns: none
         """
 
-        
         print(previousTurn == self.board)
 
     def start_game(self, cap):
@@ -171,6 +170,9 @@ class Main:
                 # board on the translator as appropriate (confirming it from
                 # visual data from openCV image)
                 print(vals)
+
+                print(self.make_matrix(newBoard))
+
             print(self.board)
 
             matchEnd = self.board.outcome()
@@ -188,6 +190,7 @@ class Main:
         self.playerWon = False
         cv2.destroyAllWindows()
         return self.gameState
+
     
     def frame_comparison(self, cap):
          
@@ -262,7 +265,6 @@ class Main:
             
 
         cap.release()
-        cv2.destroyAllWindows()
 
         return
 
@@ -276,7 +278,7 @@ if __name__ == "__main__":
     # newBoard = ch.Board("1n4k1/r5np/1p4PB/p1p5/2q3P1/2P4P/8/4QRK1")
 
     # white and black can castle on queen or king side
-    #newBoard = ch.Board("r3k2r/pppppppp/8/8/8/8/PPPPPPPP/R3K2R")
+    # newBoard = ch.Board("r3k2r/pppppppp/8/8/8/8/PPPPPPPP/R3K2R")
 
     # Mate in 1
     #newBoard = ch.Board("k7/ppp5/8/8/8/8/3Q4/4RK2")
@@ -287,11 +289,13 @@ if __name__ == "__main__":
 
     game = Main(newBoard)
 
-    t = threading.Thread(target=game.frame_comparison, args=(cap,))
-    t.start()
+    print(game.make_matrix(newBoard))
 
-
-    game.start_game(cap)
+    t = threading.Thread(target=game.frame_comparison)
+    t. start()
+    
+    # print(game.make_matrix(newBoard))
+    game.start_game()
 
     if game.gameState == "y":
         game.board.reset()
