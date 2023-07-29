@@ -106,3 +106,8 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+aaa.py
+cam.py
+contours.py
+*.png
+
