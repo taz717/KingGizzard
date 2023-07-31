@@ -1,7 +1,6 @@
 from src import kingGizzard as kg
 import chess as ch
 import cv2
-import time
 import threading
 import numpy as np
 
@@ -193,71 +192,58 @@ class Main:
 
     
     def frame_comparison(self, cap):
-         
         ret, frame = cap.read()
 
-
         while True:
-            
             cv2.resize(frame, (600, 600))
             cv2.imshow("Webcam", frame)
             grey1 = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
             grey1_resized = cv2.resize(grey1, (600, 600))
 
-            # Push 'c' to capture
             key = cv2.waitKey(1)
             if key == ord('c'):
-                # cv2.imwrite("new_frame.png", frame)
-                # print ("New frame captured")
-                
                 ret2, new_frame = cap.read()
                 if not ret2:
-                    print ("Error capturing frame")
+                    print("Error capturing frame")
                     break
                 grey2 = cv2.cvtColor(new_frame, cv2.COLOR_BGR2GRAY)
                 grey2_resized = cv2.resize(grey2, (600, 600))
 
-                # Compare the old frame and the new frame to see if there is a change
                 diff = cv2.absdiff(grey1_resized, grey2_resized)
-
                 is_diff = np.all((diff == 0) | (diff == 255))
 
                 if not is_diff:
-                    
                     _, threshold = cv2.threshold(diff, 30, 255, cv2.THRESH_BINARY)
-
                     contours, _ = cv2.findContours(threshold, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-                    
+
                     small_movement_bound = 100
                     bounding_box = [cv2.boundingRect(cnt) for cnt in contours if cv2.contourArea(cnt) > small_movement_bound]
-                    num = 1
-                    
+
+                    self.centroids = []  # Reset the centroids list
                     for x, y, w, h in bounding_box:
                         centroid_x = x + (w // 2)
                         centroid_y = y + (h // 2)
                         centroid = (centroid_x, centroid_y)
                         self.centroids.append(centroid)
-                        cv2.circle(diff, centroid, 2, (255,255,255), 1)
-                        text = "Centroid: " + str(num)
-                        cv2.putText(diff, text, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
-                        cv2.rectangle(diff, (x,y), (x + w, y + h), (255, 255, 255), 1)
+                        self.centroids = self.centroids[-2:] #only stores the last 2 centroids
+                        cv2.circle(diff, centroid, 2, (255, 255, 255), 1)
+                        cv2.rectangle(diff, (x, y), (x + w, y + h), (255, 255, 255), 1)
                         cv2.imshow("Difference", diff)
-                        num=num+1
+
+                        text = f"Centroid: {centroid}"
+                        cv2.putText(diff, text, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
 
                     cv2.imshow("Difference", diff)
                     frame = new_frame
                 else:
-                    print ("No changes yet")
+                    print("No changes yet")
 
 
-
-            if key == ord('p'):
-                for i in self.centroids:
-                    print("Centroids: ", i)
-                print(len(self.centroids))
-                print('f')
-
-
+            if key == ord('p'):  # Print centroids when 'p' key is pressed
+                for centroid in self.centroids:
+                    print("Centroid:", centroid)
+            
+            
             # Push 'q' to quit
             if key == ord('q'):
                 break
@@ -289,13 +275,13 @@ if __name__ == "__main__":
 
     game = Main(newBoard)
 
-    print(game.make_matrix(newBoard))
+    #print(game.make_matrix(newBoard))
 
-    t = threading.Thread(target=game.frame_comparison)
+    t = threading.Thread(target=game.frame_comparison, args=(cap,))
     t. start()
     
     # print(game.make_matrix(newBoard))
-    game.start_game()
+    game.start_game(cap)
 
     if game.gameState == "y":
         game.board.reset()
