@@ -95,7 +95,7 @@ class ChessBoard:
 
 #Displays the points drawn within opencv            
 def draw_points(grid):
-    img = cv2.imread("images/chessboard.png")
+    img = cv2.imread("C:\\Users\\Gordon\\OneDrive\\Desktop\\School\\cmpt496\\KingGizzard\\images\\chessboard.png")
 
     for key in grid:
         for i in grid[key]:
@@ -169,7 +169,7 @@ def get_grid():
         # Capture a screenshot when the spacebar is pressed
         if key == ord('s'):  # Check for spacebar press
             # Save the frame as an image
-            cv2.imwrite('images/chessboard.png', frame)
+            cv2.imwrite('C:\\Users\\Gordon\\OneDrive\\Desktop\\School\\cmpt496\\KingGizzard\\images\\chessboard.png', frame)
             print("Screenshot saved as 'screenshot.png'")
             break
 
@@ -190,7 +190,7 @@ def get_grid():
     objp[0,:,:2] = np.mgrid[0:CHECKERBOARD[0], 0:CHECKERBOARD[1]].T.reshape(-1, 2)
     
     # Extracting path of individual image stored in a given directory
-    images = glob.glob('./images/chessboard.png')
+    images = glob.glob('C:\\Users\\Gordon\\OneDrive\\Desktop\\School\\cmpt496\\KingGizzard\\images\\chessboard.png')
     for fname in images:
         img = cv2.imread(fname)
         gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
@@ -247,4 +247,6 @@ def test():
     print()
     print(board.display_board())
 
+
+test()
 
