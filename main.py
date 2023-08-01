@@ -24,6 +24,7 @@ class Main:
         self.gameState = True
         self.kingWon = False
         self.playerWon = False
+        self.reference_frame = None
         self.centroids = []
     
     ## play player move
@@ -44,10 +45,12 @@ class Main:
 
             ## get user input
             play = input("your move: ")
+
+            # Use this to check current reference image
             if play == "show":
                 cv2.imshow("Reference image", self.reference_frame)
                 cv2.waitKey(6000)
-                cv2.destroyWindow("Reference frame")
+                cv2.destroyWindow("Reference image")
             if play == "undo":
                 self.board.pop()
                 self.board.pop()
