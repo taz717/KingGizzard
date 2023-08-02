@@ -24,7 +24,8 @@ class Main:
         self.gameState = True
         self.kingWon = False
         self.playerWon = False
-        self.reference_frame = None
+        self.cmpt_reference_frame = None
+        self.player_reference_frame = None
         self.centroids = []
     
     ## play player move
@@ -43,12 +44,15 @@ class Main:
 
             print("""To undo your last move, type "undo".""")
 
+            # Grab player picture after "x" is entered.
+            # Assumes player makes correct move
+
             ## get user input
             play = input("your move: ")
 
             # Use this to check current reference image
             if play == "show":
-                cv2.imshow("Reference image", self.reference_frame)
+                cv2.imshow("Reference image", self.cmpt_reference_frame)
                 cv2.waitKey(6000)
                 cv2.destroyWindow("Reference image")
             if play == "undo":
@@ -120,7 +124,7 @@ class Main:
 
 
         ret, frame = cap.read()
-        self.reference_frame = frame.copy()
+        self.cmpt_reference_frame = frame.copy()
         # cv2.imshow("Reference frame", self.reference_frame)
         # cv2.waitKey(6000)
         # cv2.destroyWindow("Reference frame")
@@ -211,7 +215,7 @@ class Main:
         ret, frame = cap.read()
 
         while True:
-            cv2.resize(frame, (600, 600))
+            
             cv2.imshow("Webcam", frame)
             grey1 = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
             grey1_resized = cv2.resize(grey1, (600, 600))
@@ -225,7 +229,7 @@ class Main:
                 grey2 = cv2.cvtColor(new_frame, cv2.COLOR_BGR2GRAY)
                 grey2_resized = cv2.resize(grey2, (600, 600))
 
-                diff = cv2.absdiff(grey1_resized, grey2_resized)
+                diff = cv2.absdiff(grey1, grey2)
                 is_diff = np.all((diff == 0) | (diff == 255))
 
                 if not is_diff:
@@ -236,6 +240,7 @@ class Main:
                     bounding_box = [cv2.boundingRect(cnt) for cnt in contours if cv2.contourArea(cnt) > small_movement_bound]
 
                     self.centroids = []  # Reset the centroids list
+                    old = 1
                     for x, y, w, h in bounding_box:
                         centroid_x = x + (w // 2)
                         centroid_y = y + (h // 2)
@@ -243,7 +248,11 @@ class Main:
                         self.centroids.append(centroid)
                         self.centroids = self.centroids[-2:] #only stores the last 2 centroids
                         cv2.circle(diff, centroid, 2, (255, 255, 255), 1)
-                        cv2.rectangle(diff, (x, y), (x + w, y + h), (255, 255, 255), 1)
+                        if old == 1:
+                            cv2.rectangle(diff, (x, y), (x + w, y + h), (155, 155, 155), 1)
+                            old = 0
+                        else:
+                            cv2.rectangle(diff, (x, y), (x + w, y + h), (255, 255, 255), 1)
                         cv2.imshow("Difference", diff)
 
                         text = f"Centroid: {centroid}"
@@ -274,10 +283,10 @@ class Main:
 
 if __name__ == "__main__":
     # Fresh Board
-    newBoard = ch.Board()
+    #newBoard = ch.Board()
     
     # Mate in 2
-    # newBoard = ch.Board("1n4k1/r5np/1p4PB/p1p5/2q3P1/2P4P/8/4QRK1")
+    newBoard = ch.Board("1n4k1/r5np/1p4PB/p1p5/2q3P1/2P4P/8/4QRK1")
 
     # white and black can castle on queen or king side
     # newBoard = ch.Board("r3k2r/pppppppp/8/8/8/8/PPPPPPPP/R3K2R")
