@@ -26,16 +26,25 @@ class Main:
         self.playerWon = False
         self.cmpt_reference_frame = None
         self.player_reference_frame = None
+        self.diff = None
         self.centroids = []
     
     ## play player move
-    def play_player_move(self):
+    def play_player_move(self, cap):
         """
         plays the opponent's move
         parems: none
         returns: none but it does add the ops move to
         the board object
         """
+        # pretend you made a move valid here
+        # ATTENTION!!!!!!!!sa
+        # NEED TO REMOVE THIS WHEN FIXED
+        print("human cheese")
+        time.sleep(2)
+        ret, frame = cap.read()
+        self.player_reference_frame = frame.copy()
+
         try:
             print(self.board.legal_moves)
 
@@ -44,26 +53,44 @@ class Main:
 
             print("""To undo your last move, type "undo".""")
 
-            # Grab player picture after "x" is entered.
-            # Assumes player makes correct move
 
-            ## get user input
+
+            # EDITORS NOTES
+            # hit a key after player move, take picture
+            # send to frame_comparison and get diff
+            # use diff to find movement using boardDetection graph
+            # use movement to find play using translator
             play = input("your move: ")
 
+
             # Use this to check current reference image
-            if play == "show":
+            if play == "show1":
                 cv2.imshow("Reference image", self.cmpt_reference_frame)
                 cv2.waitKey(6000)
                 cv2.destroyWindow("Reference image")
+            if play == "show2":
+                cv2.imshow("Player image", self.player_reference_frame)
+                cv2.waitKey(6000)
+                cv2.destroyWindow("Player image")
+            if play == "show3":
+                self.frame_comparison(self.cmpt_reference_frame, self.player_reference_frame)
+                cv2.imshow("Diff image", self.diff)
+                cv2.waitKey(6000)
+                cv2.destroyWindow("Diff image")
+            if play == "showall":
+                cv2.imshow("computer move picture", self.cmpt_reference_frame)
+                cv2.imshow("player move picture", self.player_reference_frame)
+                cv2.waitKey(0)
+                cv2.destroyAllWindows()
             if play == "undo":
                 self.board.pop()
                 self.board.pop()
-                self.play_player_move()
+                self.play_player_move(cap)
                 return
 
             self.board.push_san(play)
         except:
-            self.play_player_move()
+            self.play_player_move(cap)
 
     def make_matrix(self, board):
         """
@@ -111,9 +138,8 @@ class Main:
         returns: none but it does add the engine's move to
         the board object
         """
-        # cap = cv2.VideoCapture(0)
-        # ret, frame = cap.read()
-        # self.board = frame
+
+
         win = True
         engine = kg.KingGizzard(self.board, maxDepth, color)
         move = engine.get_best_move()
@@ -122,12 +148,10 @@ class Main:
         else:
             self.board.push(engine.get_best_move())
 
-
+        print("say cheese")
+        time.sleep(3)
         ret, frame = cap.read()
         self.cmpt_reference_frame = frame.copy()
-        # cv2.imshow("Reference frame", self.reference_frame)
-        # cv2.waitKey(6000)
-        # cv2.destroyWindow("Reference frame")
 
     def translate_boards(self, previousTurn):
         """
@@ -146,8 +170,11 @@ class Main:
         """
 
         ret, frame = cap.read()
+        
+        input("Hit enter after setting up chess board: ")
+        self.cmpt_reference_frame = frame.copy()
+        print("")
 
-        self.oldFrame = frame
         
         ## get opponent color
         color = None
@@ -167,14 +194,14 @@ class Main:
                 ## TODO SEND VALS TO ARDUINO TO MOVE PIECES
                 print(vals)
                 
-                self.play_player_move()
+                self.play_player_move(cap)
 
             print(self.board)
             print(self.board.outcome())
         elif color == "w":
             while self.board.is_checkmate() == False:
                 print(self.board)
-                self.play_player_move()
+                self.play_player_move(cap)
                 print(self.board)
 
                 print("King Gizzard is thinking...")
@@ -209,84 +236,52 @@ class Main:
         return self.gameState
 
     
-    def frame_comparison(self, cap):
+    def frame_comparison(self, cmpt_ref, player_ref):
 
         # Pull reference frame here, and process that for the greyscale
-        ret, frame = cap.read()
+        grey1 = cv2.cvtColor(cmpt_ref, cv2.COLOR_BGR2GRAY)
+        grey2 = cv2.cvtColor(player_ref, cv2.COLOR_BGR2GRAY)
 
-        while True:
-            
-            cv2.imshow("Webcam", frame)
-            grey1 = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-            grey1_resized = cv2.resize(grey1, (600, 600))
+        diff = cv2.absdiff(grey1, grey2)
+        # is_diff = np.all((diff == 0) | (diff == 255))
 
-            key = cv2.waitKey(1)
-            if key == ord('c'):
-                ret2, new_frame = cap.read()
-                if not ret2:
-                    print("Error capturing frame")
-                    break
-                grey2 = cv2.cvtColor(new_frame, cv2.COLOR_BGR2GRAY)
-                grey2_resized = cv2.resize(grey2, (600, 600))
+        # if not is_diff:
+        _, threshold = cv2.threshold(diff, 30, 255, cv2.THRESH_BINARY)
+        contours, _ = cv2.findContours(threshold, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
-                diff = cv2.absdiff(grey1, grey2)
-                is_diff = np.all((diff == 0) | (diff == 255))
+        small_movement_bound = 100
+        bounding_box = [cv2.boundingRect(cnt) for cnt in contours if cv2.contourArea(cnt) > small_movement_bound]
 
-                if not is_diff:
-                    _, threshold = cv2.threshold(diff, 30, 255, cv2.THRESH_BINARY)
-                    contours, _ = cv2.findContours(threshold, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        self.centroids = []  # Reset the centroids list
 
-                    small_movement_bound = 100
-                    bounding_box = [cv2.boundingRect(cnt) for cnt in contours if cv2.contourArea(cnt) > small_movement_bound]
+        for x, y, w, h in bounding_box:
+            centroid_x = x + (w // 2)
+            centroid_y = y + (h // 2)
+            centroid = (centroid_x, centroid_y)
+            self.centroids.append(centroid)
+            self.centroids = self.centroids[-2:] #only stores the last 2 centroids
+            cv2.circle(diff, centroid, 2, (255, 255, 255), 1)
+            cv2.rectangle(diff, (x, y), (x + w, y + h), (155, 155, 155), 1)
+            text = f"Centroid: {centroid}"
+            cv2.putText(diff, text, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
+            self.diff = diff
 
-                    self.centroids = []  # Reset the centroids list
-                    old = 1
-                    for x, y, w, h in bounding_box:
-                        centroid_x = x + (w // 2)
-                        centroid_y = y + (h // 2)
-                        centroid = (centroid_x, centroid_y)
-                        self.centroids.append(centroid)
-                        self.centroids = self.centroids[-2:] #only stores the last 2 centroids
-                        cv2.circle(diff, centroid, 2, (255, 255, 255), 1)
-                        if old == 1:
-                            cv2.rectangle(diff, (x, y), (x + w, y + h), (155, 155, 155), 1)
-                            old = 0
-                        else:
-                            cv2.rectangle(diff, (x, y), (x + w, y + h), (255, 255, 255), 1)
-                        cv2.imshow("Difference", diff)
+        return 
+        
+        # else:
+        #     print("No visible change")
+        #     return None
 
-                        text = f"Centroid: {centroid}"
-                        cv2.putText(diff, text, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
-
-                    cv2.imshow("Difference", diff)
-                    frame = new_frame
-                else:
-                    print("No changes yet")
-
-
-            if key == ord('p'):  # Print centroids when 'p' key is pressed
-                for centroid in self.centroids:
-                    print("Centroid:", centroid)
-            
-            
-            # Push 'q' to quit
-            if key == ord('q'):
-                break
-
-            
-
-        cap.release()
-
-        return
+        # return
 
 
 
 if __name__ == "__main__":
     # Fresh Board
-    #newBoard = ch.Board()
+    newBoard = ch.Board()
     
     # Mate in 2
-    newBoard = ch.Board("1n4k1/r5np/1p4PB/p1p5/2q3P1/2P4P/8/4QRK1")
+    #newBoard = ch.Board("1n4k1/r5np/1p4PB/p1p5/2q3P1/2P4P/8/4QRK1")
 
     # white and black can castle on queen or king side
     # newBoard = ch.Board("r3k2r/pppppppp/8/8/8/8/PPPPPPPP/R3K2R")
@@ -302,8 +297,6 @@ if __name__ == "__main__":
 
     #print(game.make_matrix(newBoard))
 
-    t = threading.Thread(target=game.frame_comparison, args=(cap,))
-    t. start()
     
     # print(game.make_matrix(newBoard))
     game.start_game(cap)
@@ -313,6 +306,6 @@ if __name__ == "__main__":
         game.start_game(cap)
 
 
-    t.join()
+
     print("Thanks for playing!")
 
