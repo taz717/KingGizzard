@@ -18,25 +18,22 @@ Gordon Chi and Travis Mundy
 ### Resources and Credits
 #### Libraries used
 - python_chess
-- random
 
 #### Debugging aid
 https://stackoverflow.com/questions/55876336/is-there-a-way-to-convert-a-python-chess-board-into-a-list-of-integers \
 https://www.chessprogramming.org/Hans_Berliner
 
 #### Chess notation
-
 https://www.chess.com/article/view/chess-notation
 
 ##### TLDR
-
-x: captures
-0-0: kingside castle
-0-0-0: queenside castle
-+: check
-#: checkmate
-!: good move
-?: poor move
+- x: captures
+- 0-0: kingside castle
+- 0-0-0: queenside castle
+- +: check
+- #: checkmate
+- !: good move
+- ?: poor move
 
 ### Python naming convetions used
 https://peps.python.org/pep-0008/
@@ -47,21 +44,3 @@ https://peps.python.org/pep-0008/
 - methods use snake_case
 - constants use SNAKE_CAP_WORDS
 - vars use camelCase
-
-### Updates
-#### V1.00
-- base model from HackED
-
-#### v2.00
-- fix issue where AI would crash when player was black
-- TODO fix issue where crash occurs during 1 move mate as black player
-- TODO start working on translater
-- TODO issues where AI would creash at depth 7+
-- TODO figure out issue where game is not detecting mate
-
-#### v2.01
-- add to state control to board to reset better
-- add stalemate detection
-- add player vs ai win detection
-- fix checkmate crash
-- fix depth 7+ crash

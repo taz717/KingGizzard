@@ -1,6 +1,6 @@
 class translator:
     def __init__(self):
-        self.numToLetterDict = {
+        self.numToColDict = {
             1: "a",
             2: "b",
             3: "c",
@@ -10,16 +10,37 @@ class translator:
             7: "g",
             8: "h",
         }
-        self.boardCurrent = [
-            ["R", "N", "B", "K", "Q", "B", "N", "R"],
 
-            ["P", "P", "P", "P", "P", "P", "P", "P"],
-            [" ", " ", " ", " ", " ", " ", " ", " "],
-            [" ", " ", " ", " ", " ", " ", " ", " "],
-            [" ", " ", " ", " ", " ", " ", " ", " "],
-            [" ", " ", " ", " ", " ", " ", " ", " "],
-            ["p", "p", "p", "p", "p", "p", "p", "p"],
+        self.boardPrevious = [
             ["r", "n", "b", "k", "q", "b", "n", "r"],
+            ["p", "p", "p", "p", "p", "p", "p", "p"],
+            [" ", " ", " ", " ", " ", " ", " ", " "],
+            [" ", " ", " ", " ", " ", " ", " ", " "],
+            [" ", " ", " ", " ", " ", " ", " ", " "],
+            [" ", " ", " ", " ", " ", " ", " ", " "],
+            ["P", "P", "P", "P", "P", "P", "P", "P"],
+            ["R", "N", "B", "K", "Q", "B", "N", "R"],
+        ]
+        self.boardCurrent = [
+            ["r", "n", "b", "k", "q", "b", "n", "r"],
+            ["p", "p", "p", "p", "p", "p", "p", "p"],
+            [" ", " ", " ", " ", " ", " ", " ", " "],
+            [" ", " ", " ", " ", " ", " ", " ", " "],
+            [" ", " ", " ", " ", " ", " ", " ", " "],
+            [" ", " ", " ", " ", " ", " ", " ", " "],
+            ["P", "P", "P", "P", "P", "P", "P", "P"],
+            ["R", "N", "B", "K", "Q", "B", "N", "R"],
+        ]
+
+        self.boardPreviousBin = [
+            [1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1],
         ]
 
     def compare_boards(self, matrix1, matrix2):
@@ -33,9 +54,16 @@ class translator:
             for j in range(len(matrix1)):
                 if matrix1[i][j] != matrix2[i][j]:
                     vals.append(
-                        [matrix1[i][j], self.numToLetterDict[j + 1] + str(i + 1)]
+                        # [Binary, location, row, col]
+                        # or
+                        # [Piece, location, row, col]
+                        [
+                            matrix1[i][j],
+                            self.numToColDict[j + 1] + str(8 - i),
+                            i,
+                            j,
+                        ]
                     )
-
         return vals
 
     def calculate_move(self, change):
@@ -50,15 +78,12 @@ class translator:
         returns: move (str)
         """
         move = ""
+        print(change)
 
-        startPiece = change[0][0].upper()
-        print (startPiece)
-        start = change[0][1]
-        print (start)
-        endPiece = change[1][0].upper()
-        print (endPiece)
-        end = change[1][1]
-        print (end)
+        endPiece = change[0][0].upper()
+        end = change[0][1]
+        startPiece = change[1][0].upper()
+        start = change[1][1]
 
         ## king side castle
         if (
@@ -97,19 +122,57 @@ class translator:
         """
         self.boardCurrent = board
 
+    def update_board_bin(self, board):
+        """
+        updates the current board to the new board
+        parems: board (2d list)
+        returns: None
+        """
+
+        self.boardPreviousBin = board
+
+    def convert_board(self, vals):
+        """
+        converts the new bin board to new piece board
+        parems: vals (list)
+        returns: None
+        """
+
+        pieceMoved = self.boardCurrent[vals[1][2]][vals[1][3]]
+        self.boardCurrent[vals[1][2]][vals[1][3]] = " "
+        self.boardCurrent[vals[0][2]][vals[0][3]] = pieceMoved
+
+    def translate(self, boardCurrentBin):
+        """
+        translates the bin 2d list to a 2d list of pieces
+        then figures out the move and returns it
+        parems: boardCurrentBin (2d list)
+        returns: move (str)
+        """
+
+        binChange = self.compare_boards(self.boardPreviousBin, boardCurrentBin)
+        self.convert_board(binChange)
+        pieceChange = self.compare_boards(self.boardPrevious, self.boardCurrent)
+        move = self.calculate_move(pieceChange)
+
+        self.update_board_bin(boardCurrentBin)
+        self.update_board(self.boardCurrent)
+
+        return move
+
 
 if __name__ == "__main__":
-    testMoveBoard = [
-        ["R", "N", "B", "K", "Q", "B", "N", "R"],
-        ["P", "P", " ", "P", "P", "P", "P", "P"],
-        [" ", " ", " ", " ", " ", " ", " ", " "],
-        [" ", " ", "P", " ", " ", " ", " ", " "],
-        [" ", " ", " ", " ", " ", " ", " ", " "],
-        [" ", " ", " ", " ", " ", " ", " ", " "],
-        ["p", "p", "p", "p", "p", "p", "p", "p"],
-        ["r", "n", "b", "k", "q", "b", "n", "r"],
+    normalBoardBinMove = [
+        [1, 1, 1, 1, 1, 1, 1, 1],
+        [1, 1, 1, 1, 1, 1, 1, 1],
+        [0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 1, 0, 0, 0, 0, 0, 0],
+        [1, 0, 1, 1, 1, 1, 1, 1],
+        [1, 1, 1, 1, 1, 1, 1, 1],
     ]
 
     t = translator()
     # print(t.compare_boards(t.boardCurrent, testMoveBoard))
-    print(t.calculate_move(t.compare_boards(t.boardCurrent, testMoveBoard)))
+    print(t.translate(normalBoardBinMove))
