@@ -78,6 +78,7 @@ class translator:
         returns: move (str)
         """
         move = ""
+        print(change)
 
         endPiece = change[0][0].upper()
         end = change[0][1]
