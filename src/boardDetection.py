@@ -30,11 +30,9 @@ class Space:
             self.status = False
             return
         
-    def init_status(self):
-        self.status = True
 
 # Class that will hold all the spaces and the border min x,y and max x,y
-class ChessBoard:
+class Board_Img:
     def __init__(self):
         grid = get_grid()
         self.border = [grid['1'][0][0], grid['1'][-1][0],grid['1'][0][1], grid['8'][0][1]] 
@@ -44,13 +42,12 @@ class ChessBoard:
         temp_dict = {key: str(value) for key, value in self.spaces.items()}
         return str(temp_dict)
 
-    #move the points it spaces 
+    #Make the points into spaces  
     def get_space(self, grid):
         squares = {}
         col = 0
         names = ['A','B','C','D','E','F', 'G','H']
         keyList = list(grid.keys())
-
         for keys in keyList[:-1]:
             col+=1
             for i in range(0, (len(grid['0'])-1)):
@@ -90,7 +87,29 @@ class ChessBoard:
                 line = []
         return boardState
 
-
+    def player_move(self, centeriod):
+        check = 0
+        empty, notEmpty = []
+        for i in self.spaces:
+            if self.spaces[i].in_space(centeriod[0]):
+                if self.spaces[i].status:
+                    notEmpty.append(i)
+                else:
+                    empty.append(i)
+                check += 1
+            if self.spaces[i].in_space(centeriod[1]):
+                if self.spaces[i].status:
+                    notEmpty.append(i)
+                else:
+                    empty.append(i)
+                
+                check += 1
+            if check == 2:
+                break
+        if len(notEmpty) < 2:
+            self.spaces[empty[0]].status = True
+            self.spaces[notEmpty[0]].status = False
+        return
 #HELPER FUNCTIONS TO GET GRID
 
 #Displays the points drawn within opencv            
@@ -149,7 +168,7 @@ def get_board(grid, avgX, avgY):
 #take picture of the 
 def get_grid():
 
-    cap = cv2.VideoCapture(0)
+    cap = cv2.VideoCapture(4)
 
     # Check if the webcam is opened successfully
     if not cap.isOpened():
@@ -206,7 +225,6 @@ def get_grid():
             imgpoints.append(corners2)
     
             # Draw and display the corners
-            img = cv2.drawChessboardCorners(img, CHECKERBOARD, corners2, ret)
             counter = 0
             row = 0
             y_row = 0
@@ -238,7 +256,7 @@ def get_grid():
 
 
 def test():
-    board = ChessBoard()
+    board = Board_Img()
     print(str(board))
     print()
     print(board.display_board())
@@ -247,4 +265,4 @@ def test():
     print()
     print(board.display_board())
 
-
+test()
