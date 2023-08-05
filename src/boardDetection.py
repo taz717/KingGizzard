@@ -30,11 +30,9 @@ class Space:
             self.status = False
             return
         
-    def init_status(self):
-        self.status = True
 
 # Class that will hold all the spaces and the border min x,y and max x,y
-class ChessBoard:
+class Board_Img:
     def __init__(self):
         grid = get_grid()
         self.border = [grid['1'][0][0], grid['1'][-1][0],grid['1'][0][1], grid['8'][0][1]] 
@@ -44,15 +42,14 @@ class ChessBoard:
         temp_dict = {key: str(value) for key, value in self.spaces.items()}
         return str(temp_dict)
 
-    #move the points it spaces 
+    #Make the points into spaces  
     def get_space(self, grid):
         squares = {}
-        col = 9
-        names = ['A','B','C','D','E','F','G','H']
+        col = 0
+        names = ['A','B','C','D','E','F', 'G','H']
         keyList = list(grid.keys())
-
         for keys in keyList[:-1]:
-            col-=1
+            col+=1
             for i in range(0, (len(grid['0'])-1)):
                 space = Space(grid[keys][i],grid[keys][i+1], grid[str(int(keys)+1)][i])
                 index  = str(names[i]) + str(col)
@@ -68,8 +65,8 @@ class ChessBoard:
         
     # will initialize the first two lines on each side at the start 
     def initialize_board(self):
-        names = ['A','B','C','D','E','F','G','H']
-        lines = ['1','2','7','8']
+        names = ['A','B','C','D','E','F', 'G','H']
+        lines = ['1','2', '7', '8']
 
         for i in lines:
             for n in names:
@@ -90,12 +87,34 @@ class ChessBoard:
                 line = []
         return boardState
 
-
+    def player_move(self, centeriod):
+        check = 0
+        empty, notEmpty = []
+        for i in self.spaces:
+            if self.spaces[i].in_space(centeriod[0]):
+                if self.spaces[i].status:
+                    notEmpty.append(i)
+                else:
+                    empty.append(i)
+                check += 1
+            if self.spaces[i].in_space(centeriod[1]):
+                if self.spaces[i].status:
+                    notEmpty.append(i)
+                else:
+                    empty.append(i)
+                
+                check += 1
+            if check == 2:
+                break
+        if len(notEmpty) < 2:
+            self.spaces[empty[0]].status = True
+            self.spaces[notEmpty[0]].status = False
+        return
 #HELPER FUNCTIONS TO GET GRID
 
 #Displays the points drawn within opencv            
 def draw_points(grid):
-    img = cv2.imread("C:\\Users\\azn_g\\Desktop\\School\\Final Project\\King Gizzard\\images\\chessboard.png")
+    img = cv2.imread("images/chessboard.png")
 
     for key in grid:
         for i in grid[key]:
@@ -149,7 +168,7 @@ def get_board(grid, avgX, avgY):
 #take picture of the 
 def get_grid():
 
-    cap = cv2.VideoCapture(0)
+    cap = cv2.VideoCapture(4)
 
     # Check if the webcam is opened successfully
     if not cap.isOpened():
@@ -169,7 +188,7 @@ def get_grid():
         # Capture a screenshot when the spacebar is pressed
         if key == ord('s'):  # Check for spacebar press
             # Save the frame as an image
-            cv2.imwrite('C:\\Users\\azn_g\\Desktop\\School\\Final Project\\King Gizzard\\images\\chessboard.png', frame)
+            cv2.imwrite('images/chessboard.png', frame)
             print("Screenshot saved as 'screenshot.png'")
             break
 
@@ -190,7 +209,7 @@ def get_grid():
     objp[0,:,:2] = np.mgrid[0:CHECKERBOARD[0], 0:CHECKERBOARD[1]].T.reshape(-1, 2)
     
     # Extracting path of individual image stored in a given directory
-    images = glob.glob('C:\\Users\\azn_g\\Desktop\\School\\Final Project\\King Gizzard\\images\\chessboard.png')
+    images = glob.glob('./images/chessboard.png')
     for fname in images:
         img = cv2.imread(fname)
         gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
@@ -206,13 +225,12 @@ def get_grid():
             imgpoints.append(corners2)
     
             # Draw and display the corners
-            img = cv2.drawChessboardCorners(img, CHECKERBOARD, corners2, ret)
             counter = 0
             row = 0
             y_row = 0
             for corner in corners:
                 x, y = corner.ravel()  # Get the x and y coordinates
-                if (y > y_row + 7):
+                if (y > y_row + 15):
                     row += 1
                     y_row = y 
                     grid[str(row)] = [(int(x),int(y))]
@@ -238,7 +256,7 @@ def get_grid():
 
 
 def test():
-    board = ChessBoard()
+    board = Board_Img()
     print(str(board))
     print()
     print(board.display_board())
@@ -247,6 +265,4 @@ def test():
     print()
     print(board.display_board())
 
-
 test()
-
