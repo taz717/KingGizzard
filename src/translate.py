@@ -98,18 +98,18 @@ class translator:
         self.boardCurrent = board
 
 
-if __name__ == "__main__":
-    testMoveBoard = [
-        ["R", "N", "B", "K", "Q", "B", "N", "R"],
-        ["P", "P", " ", "P", "P", "P", "P", "P"],
-        [" ", " ", " ", " ", " ", " ", " ", " "],
-        [" ", " ", "P", " ", " ", " ", " ", " "],
-        [" ", " ", " ", " ", " ", " ", " ", " "],
-        [" ", " ", " ", " ", " ", " ", " ", " "],
-        ["p", "p", "p", "p", "p", "p", "p", "p"],
-        ["r", "n", "b", "k", "q", "b", "n", "r"],
-    ]
+# if __name__ == "__main__":
+#     normalBoardBinMove = [
+#         [1, 1, 1, 1, 1, 1, 1, 1],
+#         [1, 1, 1, 1, 1, 1, 1, 1],
+#         [0, 0, 0, 0, 0, 0, 0, 0],
+#         [0, 0, 0, 0, 0, 0, 0, 0],
+#         [0, 0, 0, 0, 0, 0, 0, 0],
+#         [0, 1, 0, 0, 0, 0, 0, 0],
+#         [1, 0, 1, 1, 1, 1, 1, 1],
+#         [1, 1, 1, 1, 1, 1, 1, 1],
+#     ]
 
-    t = translator()
-    # print(t.compare_boards(t.boardCurrent, testMoveBoard))
-    print(t.calculate_move(t.compare_boards(t.boardCurrent, testMoveBoard)))
+#     t = translator()
+#     # print(t.compare_boards(t.boardCurrent, testMoveBoard))
+#     print(t.translate(normalBoardBinMove))

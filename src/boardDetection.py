@@ -46,7 +46,7 @@ class Board_Img:
     def get_space(self, grid):
         squares = {}
         col = 0
-        names = ['A','B','C','D','E','F', 'G','H']
+        names = ['A','B','C','D','E','F','G','H']
         keyList = list(grid.keys())
         for keys in keyList[:-1]:
             col+=1
@@ -114,7 +114,7 @@ class Board_Img:
 
 #Displays the points drawn within opencv            
 def draw_points(grid):
-    img = cv2.imread("images/chessboard.png")
+    img = cv2.imread("C:\\Users\\azn_g\\Desktop\School\\Final Project\\King Gizzard\\chessboard.png")
 
     for key in grid:
         for i in grid[key]:
@@ -168,7 +168,7 @@ def get_board(grid, avgX, avgY):
 #take picture of the 
 def get_grid():
 
-    cap = cv2.VideoCapture(4)
+    cap = cv2.VideoCapture(0)
 
     # Check if the webcam is opened successfully
     if not cap.isOpened():
@@ -188,12 +188,12 @@ def get_grid():
         # Capture a screenshot when the spacebar is pressed
         if key == ord('s'):  # Check for spacebar press
             # Save the frame as an image
-            cv2.imwrite('images/chessboard.png', frame)
+            cv2.imwrite('C:\\Users\\azn_g\\Desktop\School\\Final Project\\King Gizzard\\chessboard.png', frame)
             print("Screenshot saved as 'screenshot.png'")
             break
 
     # Release the webcam and close the window
-    cap.release()
+
     cv2.destroyAllWindows()
 
     criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
@@ -209,7 +209,7 @@ def get_grid():
     objp[0,:,:2] = np.mgrid[0:CHECKERBOARD[0], 0:CHECKERBOARD[1]].T.reshape(-1, 2)
     
     # Extracting path of individual image stored in a given directory
-    images = glob.glob('./images/chessboard.png')
+    images = glob.glob('C:\\Users\\azn_g\\Desktop\School\\Final Project\\King Gizzard\\chessboard.png')
     for fname in images:
         img = cv2.imread(fname)
         gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
@@ -230,7 +230,7 @@ def get_grid():
             y_row = 0
             for corner in corners:
                 x, y = corner.ravel()  # Get the x and y coordinates
-                if (y > y_row + 15):
+                if (y > y_row + 7):
                     row += 1
                     y_row = y 
                     grid[str(row)] = [(int(x),int(y))]
@@ -265,4 +265,4 @@ def test():
     print()
     print(board.display_board())
 
-test()
+#test()
