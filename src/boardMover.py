@@ -20,12 +20,12 @@ class BoardMover:
     def move_relative(self, x, y):
         self.x += x
         self.y += y
-        self.send_gcode("G0 X" + str(self.x) + " Y" + str(self.y))
+        self.send_gcode("G0 X" + str(self.x) + " Y" + str(self.y) + " F2000")
         return
     def move(self, x, y):
         self.x = x
         self.y = y
-        self.send_gcode("G0 X" + str(self.x) + " Y" + str(self.y))
+        self.send_gcode("G0 X" + str(self.x) + " Y" + str(self.y) + " F2000")
         return
     
     def move_piece(self, origin, destination):
@@ -51,8 +51,10 @@ class BoardMover:
         return
     
     def board_to_coord(self, square):
-        x =  160 - (ord(square[0]) - 65) *20
-        y = int(square[1]) * 20
+        x_tile = ord(square[0]) - 65
+        x = 230 - (x_tile * 30)
+    
+        y = (int(square[1]) -1 ) * 30 + 20
         return x, y
     
     def coord_to_board(self, coord):
