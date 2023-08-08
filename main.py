@@ -62,14 +62,16 @@ class Main:
             input("Make a move and hit enter: ")
     
             _, self.player_reference_frame = cap.read()
-            cv2.imshow("reference", self.cmpt_reference_frame)
-            cv2.imshow("player move", self.player_reference_frame)
+            #testing purposes
+            #cv2.imshow("reference", self.cmpt_reference_frame)
+            #cv2.imshow("player move", self.player_reference_frame)
             cv2.waitKey(0)
             cv2.destroyAllWindows()
             self.frame_comparison(self.cmpt_reference_frame, self.player_reference_frame)
             
-            map.player_move(self.centroids)
+            map.player_move(self.centroids, self.board.legal_moves)
             bin_map = map.display_board()
+            print(bin_map)
             player_move = t.translator()
             hf = player_move.translate(bin_map)
             print (hf)
@@ -182,8 +184,6 @@ class Main:
         returns: none
         """
         
-
-
         ret, frame = cap.read()
         input("Hit enter after setting up chess board: ")
         self.cmpt_reference_frame = frame.copy()
