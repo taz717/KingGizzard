@@ -36,6 +36,7 @@ class Board_Img:
         grid = get_grid()
         self.border = [grid['1'][0][0], grid['1'][-1][0],grid['1'][0][1], grid['8'][0][1]] 
         self.spaces = self.get_space(grid)
+        self.initialize_board()
         
     def __str__(self):
         temp_dict = {key: str(value) for key, value in self.spaces.items()}
@@ -128,8 +129,8 @@ class Board_Img:
 #HELPER FUNCTIONS TO GET GRID
 #Displays the points drawn within opencv            
 def draw_points(grid):
-    #img = cv2.imread("C:\\Users\\azn_g\\Desktop\School\\Final Project\\King Gizzard\\chessboard.png")
-    img = cv2.imread("images/chessboard.png")
+    img = cv2.imread("C:\\Users\\azn_g\\Desktop\School\\Final Project\\King Gizzard\\chessboard.png")
+    #img = cv2.imread("images/chessboard.png")
     for key in grid:
         for i in grid[key]:
             cv2.circle(img, (i[0], i[1]), 5, (0, 255, 0), 2)
@@ -202,8 +203,8 @@ def get_grid():
         # Capture a screenshot when the spacebar is pressed
         if key == ord('s'):  # Check for spacebar press
             # Save the frame as an image
-            #cv2.imwrite('C:\\Users\\azn_g\\Desktop\School\\Final Project\\King Gizzard\\chessboard.png', frame)
-            cv2.imwrite('images/chessboard.png', frame)
+            cv2.imwrite('C:\\Users\\azn_g\\Desktop\School\\Final Project\\King Gizzard\\chessboard.png', frame)
+            #cv2.imwrite('images/chessboard.png', frame)
             print("Screenshot saved as 'screenshot.png'")
             break
 
@@ -224,8 +225,8 @@ def get_grid():
     objp[0,:,:2] = np.mgrid[0:CHECKERBOARD[0], 0:CHECKERBOARD[1]].T.reshape(-1, 2)
     
     # Extracting path of individual image stored in a given directory
-    #images = glob.glob('C:\\Users\\azn_g\\Desktop\School\\Final Project\\King Gizzard\\chessboard.png')
-    images = glob.glob('images/chessboard.png')
+    images = glob.glob('C:\\Users\\azn_g\\Desktop\School\\Final Project\\King Gizzard\\chessboard.png')
+    #images = glob.glob('images/chessboard.png')
     for fname in images:
         img = cv2.imread(fname)
         gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
@@ -277,7 +278,6 @@ def test():
     print(str(board))
     print()
     print(board.display_board())
-    board.initialize_board()
     print()
     print()
     print(board.display_board())
