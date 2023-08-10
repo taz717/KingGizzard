@@ -87,6 +87,14 @@ class Board_Img:
                 line = []
         return boardState
 
+    def bot_move(self, moves):
+        self.spaces[moves[0]].status = False
+
+        if (not(self.spaces[moves[1]].status)):
+            self.spaces[moves[1]].status = True
+        return
+    
+    #player moves and detects new position 
     def player_move(self, centeriod, moves):
         check = 0
         empty  = []
@@ -129,7 +137,7 @@ class Board_Img:
 #HELPER FUNCTIONS TO GET GRID
 #Displays the points drawn within opencv            
 def draw_points(grid):
-    img = cv2.imread("C:\\Users\\azn_g\\Desktop\School\\Final Project\\King Gizzard\\chessboard.png")
+    img = cv2.imread("C:\\Users\\Gordon\\OneDrive\\Desktop\\School\\cmpt496\\KingGizzard\\images\chessboard.png")
     #img = cv2.imread("images/chessboard.png")
     for key in grid:
         for i in grid[key]:
@@ -203,7 +211,7 @@ def get_grid():
         # Capture a screenshot when the spacebar is pressed
         if key == ord('s'):  # Check for spacebar press
             # Save the frame as an image
-            cv2.imwrite('C:\\Users\\azn_g\\Desktop\School\\Final Project\\King Gizzard\\chessboard.png', frame)
+            cv2.imwrite('C:\\Users\\Gordon\\OneDrive\\Desktop\\School\\cmpt496\\KingGizzard\\images\\chessboard.png', frame)
             #cv2.imwrite('images/chessboard.png', frame)
             print("Screenshot saved as 'screenshot.png'")
             break
@@ -225,7 +233,7 @@ def get_grid():
     objp[0,:,:2] = np.mgrid[0:CHECKERBOARD[0], 0:CHECKERBOARD[1]].T.reshape(-1, 2)
     
     # Extracting path of individual image stored in a given directory
-    images = glob.glob('C:\\Users\\azn_g\\Desktop\School\\Final Project\\King Gizzard\\chessboard.png')
+    images = glob.glob('C:\\Users\\Gordon\\OneDrive\\Desktop\\School\\cmpt496\\KingGizzard\\images\\chessboard.png')
     #images = glob.glob('images/chessboard.png')
     for fname in images:
         img = cv2.imread(fname)
@@ -247,7 +255,7 @@ def get_grid():
             y_row = 0
             for corner in corners:
                 x, y = corner.ravel()  # Get the x and y coordinates
-                if (y > y_row + 7):
+                if (y > y_row + 5):
                     row += 1
                     y_row = y 
                     grid[str(row)] = [(int(x),int(y))]
@@ -287,5 +295,4 @@ def test():
     board.player_move(cent2,test)
     print(board.display_board())
 
-
-
+#test()
