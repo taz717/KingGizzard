@@ -1,3 +1,6 @@
+import copy
+
+
 class translator:
     def __init__(self):
         self.numToColDict = {
@@ -124,7 +127,7 @@ class translator:
         parems: board (2d list)
         returns: None
         """
-        self.boardCurrent = board
+        self.boardPrevious = copy.deepcopy(board)
 
     def __update_board_bin(self, board):
         """
@@ -146,6 +149,8 @@ class translator:
         self.boardCurrent[vals[1][2]][vals[1][3]] = " "
         self.boardCurrent[vals[0][2]][vals[0][3]] = pieceMoved
 
+        return self.boardCurrent
+
     def translate(self, boardCurrentBin):
         """
         translates the bin 2d list to a 2d list of pieces
@@ -155,7 +160,8 @@ class translator:
         """
 
         binChange = self.__compare_boards(self.boardPreviousBin, boardCurrentBin)
-        self.__convert_board(binChange)
+        self.boardCurrent = self.__convert_board(binChange)
+
         pieceChange = self.__compare_boards(self.boardPrevious, self.boardCurrent)
         move = self.__calculate_move(pieceChange)
 
@@ -178,4 +184,19 @@ if __name__ == "__main__":
     ]
 
     t = translator()
+    print(t.translate(normalBoardBinMove))
+
+    print("THIS IS WORKING FINE")
+
+    normalBoardBinMove = [
+        [1, 1, 1, 1, 1, 1, 1, 1],
+        [1, 1, 1, 1, 1, 1, 1, 1],
+        [0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 1, 1, 0, 0, 0, 0, 0],
+        [1, 0, 1, 1, 1, 1, 1, 1],
+        [1, 0, 1, 1, 1, 1, 1, 1],
+    ]
+
     print(t.translate(normalBoardBinMove))
