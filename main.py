@@ -5,7 +5,7 @@ from src import translate as t
 import chess as ch
 import cv2
 import time
-
+from src import boardMover as bm
 
 numToLetterDict = {1: "A", 2: "B", 3: "C", 4: "D", 5: "E", 6: "F", 7: "G", 8: "H"}
 
@@ -207,6 +207,7 @@ class Main:
                 vals = self.compare_boards(previousBoard, self.make_matrix(self.board))
                 ## TODO SEND VALS TO ARDUINO TO MOVE PIECES
                 print(vals)
+                boardMover.move_piece(vals[0], vals[1])
                 
                 self.play_player_move(cap)
 
@@ -228,7 +229,7 @@ class Main:
                 # board on the translator as appropriate (confirming it from
                 # visual data from openCV image)
                 print(vals)
-
+                boardMover.move_piece(vals[0], vals[1])
                 print(self.make_matrix(newBoard))
 
             print(self.board)
@@ -304,6 +305,13 @@ if __name__ == "__main__":
 
     game = Main(newBoard)
     
+
+    port = input("Enter port: ")
+    if port == "":
+        boardMover = bm.BoardMover("COM0" , 115200, True)
+    else:
+        boardMover = bm.BoardMover(port, 115200, False)
+
     #print(game.make_matrix(newBoard))
 
     
