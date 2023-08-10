@@ -184,6 +184,7 @@ if __name__ == "__main__":
     ]
 
     t = translator()
+
     print(t.translate(normalBoardBinMove))
 
     print("THIS IS WORKING FINE")
