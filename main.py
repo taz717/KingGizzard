@@ -76,7 +76,8 @@ class Main:
             #player_move = t.translator()       I don't remember where this was suppose to go, put it in the main function creation for now, will test tomorrow
             blah = player_move.translate(bin_map)
             print(blah)
-            play = blah
+            lah = input(print("enter move manually: "))
+            play = lah
 
             # Use this to check current reference image
             # if play == "show1":
@@ -207,7 +208,7 @@ class Main:
                 vals = self.compare_boards(previousBoard, self.make_matrix(self.board))
                 ## TODO SEND VALS TO ARDUINO TO MOVE PIECES
                 print(vals)
-                
+                map.bot_move(vals)
                 self.play_player_move(cap)
 
             print(self.board)
@@ -228,7 +229,8 @@ class Main:
                 # board on the translator as appropriate (confirming it from
                 # visual data from openCV image)
                 print(vals)
-
+                map.bot_move(vals)
+                boardM
                 print(self.make_matrix(newBoard))
 
             print(self.board)
