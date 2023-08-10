@@ -2,6 +2,9 @@ AI/lichess.pgn
 AI/lichess.zst
 /.vscode
 
+*.png
+images/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
