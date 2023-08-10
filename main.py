@@ -1,11 +1,12 @@
 from src import kingGizzard as kg
 from src import boardDetection as bd
+from src import boardMover as bm
 from src import translate as t
 
 import chess as ch
 import cv2
 import time
-from src import boardMover as bm
+
 
 numToLetterDict = {1: "A", 2: "B", 3: "C", 4: "D", 5: "E", 6: "F", 7: "G", 8: "H"}
 
@@ -137,11 +138,12 @@ class Main:
         parems: matrix1 (2d array), matrix2 (2d array)
         returns: vals (list)
         """
+    
         vals = []
         for i in range(len(matrix1)):
             for j in range(len(matrix1)):
                 if matrix1[i][j] != matrix2[i][j]:
-                    vals.append(numToLetterDict[j + 1] + str(i + 1))
+                    vals.append(numToLetterDict[j + 1] + str(8 - i))
                 
         return vals
 
@@ -165,8 +167,6 @@ class Main:
 
         print("say cheese")
         time.sleep(3)
-        ret, frame = cap.read()
-        self.cmpt_reference_frame = frame.copy()
 
     def translate_boards(self, previousTurn):
         """
@@ -208,7 +208,6 @@ class Main:
                 ## TODO SEND VALS TO ARDUINO TO MOVE PIECES
                 print(vals)
                 boardMover.move_piece(vals[0], vals[1])
-                
                 self.play_player_move(cap)
 
             print(self.board)
@@ -230,6 +229,7 @@ class Main:
                 # visual data from openCV image)
                 print(vals)
                 boardMover.move_piece(vals[0], vals[1])
+
                 print(self.make_matrix(newBoard))
 
             print(self.board)
@@ -303,8 +303,6 @@ if __name__ == "__main__":
     player_move = t.translator()
     cap = cv2.VideoCapture(0)
 
-    game = Main(newBoard)
-    
 
     port = input("Enter port: ")
     if port == "":
@@ -312,6 +310,8 @@ if __name__ == "__main__":
     else:
         boardMover = bm.BoardMover(port, 115200, False)
 
+    game = Main(newBoard)
+    
     #print(game.make_matrix(newBoard))
 
     
