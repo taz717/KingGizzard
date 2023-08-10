@@ -40,7 +40,7 @@ class Main:
         returns: none but it does add the ops move to
         the board object
         """
-
+        input("Hit enter when computer finishes move: ")
         try:
             print(self.board.legal_moves)
 

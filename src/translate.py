@@ -1,3 +1,6 @@
+import copy
+
+
 class translator:
     def __init__(self):
         self.numToColDict = {
@@ -43,7 +46,7 @@ class translator:
             [1, 1, 1, 1, 1, 1, 1, 1],
         ]
 
-    def compare_boards(self, matrix1, matrix2):
+    def __compare_boards(self, matrix1, matrix2):
         """
         compares two 2d arrays and returns the values that are different
         parems: matrix1 (2d array), matrix2 (2d array)
@@ -66,10 +69,10 @@ class translator:
                     )
         return vals
 
-    def calculate_move(self, change):
+    def __calculate_move(self, change):
         """
         This method is meant to form a move from the change 2Dlist
-        that is returned from the compare_boards method
+        that is returned from the __compare_boards method
 
         it follows the chess.com notation for moves dealing with
         takes, king side castling, and queen side castling
@@ -111,22 +114,22 @@ class translator:
         elif endPiece != " ":
             return startPiece + "x" + end
 
-        # pawn move 
+        ## pawn move for some reason doesn't include name
         elif startPiece == "P":
             return end
-        
+
         ## normal move no takes
         return startPiece + end
 
-    def update_board(self, board):
+    def __update_board(self, board):
         """
         updates the current board to the new board
         parems: board (2d list)
         returns: None
         """
-        self.boardCurrent = board
+        self.boardPrevious = copy.deepcopy(board)
 
-    def update_board_bin(self, board):
+    def __update_board_bin(self, board):
         """
         updates the current board to the new board
         parems: board (2d list)
@@ -135,7 +138,7 @@ class translator:
 
         self.boardPreviousBin = board
 
-    def convert_board(self, vals):
+    def __convert_board(self, vals):
         """
         converts the new bin board to new piece board
         parems: vals (list)
@@ -146,6 +149,8 @@ class translator:
         self.boardCurrent[vals[1][2]][vals[1][3]] = " "
         self.boardCurrent[vals[0][2]][vals[0][3]] = pieceMoved
 
+        return self.boardCurrent
+
     def translate(self, boardCurrentBin):
         """
         translates the bin 2d list to a 2d list of pieces
@@ -154,14 +159,14 @@ class translator:
         returns: move (str)
         """
 
-        binChange = self.compare_boards(self.boardPreviousBin, boardCurrentBin)
-        self.convert_board(binChange)
-        pieceChange = self.compare_boards(self.boardPrevious, self.boardCurrent)
-        move = self.calculate_move(pieceChange)
+        binChange = self.__compare_boards(self.boardPreviousBin, boardCurrentBin)
+        self.boardCurrent = self.__convert_board(binChange)
 
-        self.update_board_bin(boardCurrentBin)
-        self.update_board(self.boardCurrent)
-        
+        pieceChange = self.__compare_boards(self.boardPrevious, self.boardCurrent)
+        move = self.__calculate_move(pieceChange)
+
+        self.__update_board_bin(boardCurrentBin)
+        self.__update_board(self.boardCurrent)
 
         return move
 
@@ -179,5 +184,19 @@ if __name__ == "__main__":
     ]
 
     t = translator()
-    # print(t.compare_boards(t.boardCurrent, testMoveBoard))
+    print(t.translate(normalBoardBinMove))
+
+    print("THIS IS WORKING FINE")
+
+    normalBoardBinMove = [
+        [1, 1, 1, 1, 1, 1, 1, 1],
+        [1, 1, 1, 1, 1, 1, 1, 1],
+        [0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 1, 1, 0, 0, 0, 0, 0],
+        [1, 0, 1, 1, 1, 1, 1, 1],
+        [1, 0, 1, 1, 1, 1, 1, 1],
+    ]
+
     print(t.translate(normalBoardBinMove))
