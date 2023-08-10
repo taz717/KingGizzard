@@ -111,6 +111,10 @@ class translator:
         elif endPiece != " ":
             return startPiece + "x" + end
 
+        # pawn move 
+        elif startPiece == "P":
+            return end
+        
         ## normal move no takes
         return startPiece + end
 
@@ -157,6 +161,7 @@ class translator:
 
         self.update_board_bin(boardCurrentBin)
         self.update_board(self.boardCurrent)
+        
 
         return move
 
