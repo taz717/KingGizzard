@@ -1,8 +1,9 @@
 from src import kingGizzard as kg
+from src import boardDetection as bd
+from src import translate as t
+
 import chess as ch
 import cv2
-import threading
-import numpy as np
 import time
 
 
@@ -27,6 +28,7 @@ class Main:
         self.cmpt_reference_frame = None
         self.player_reference_frame = None
         self.diff = None
+        self.cvBoard = None
         self.centroids = []
     
     ## play player move
@@ -37,19 +39,15 @@ class Main:
         returns: none but it does add the ops move to
         the board object
         """
-        # pretend you made a move valid here
-        # ATTENTION!!!!!!!!sa
-        # NEED TO REMOVE THIS WHEN FIXED
-        print("human cheese")
-        time.sleep(2)
-        ret, frame = cap.read()
-        self.player_reference_frame = frame.copy()
 
         try:
             print(self.board.legal_moves)
 
             if self.board.is_checkmate() == True:
                 self.kingWon = True
+            ret, frame = cap.read()
+
+            _, self.cmpt_reference_frame = cap.read()
 
             print("""To undo your last move, type "undo".""")
 
@@ -60,28 +58,45 @@ class Main:
             # send to frame_comparison and get diff
             # use diff to find movement using boardDetection graph
             # use movement to find play using translator
-            play = input("your move: ")
-
+            
+            input("Make a move and hit enter: ")
+    
+            _, self.player_reference_frame = cap.read()
+            #testing purposes
+            #cv2.imshow("reference", self.cmpt_reference_frame)
+            #cv2.imshow("player move", self.player_reference_frame)
+            # cv2.waitKey(0)
+            # cv2.destroyAllWindows()
+            print(map.display_board())
+            self.frame_comparison(self.cmpt_reference_frame, self.player_reference_frame)
+            
+            map.player_move(self.centroids, self.board.legal_moves)
+            bin_map = map.display_board()
+            print(bin_map)
+            #player_move = t.translator()       I don't remember where this was suppose to go, put it in the main function creation for now, will test tomorrow
+            blah = player_move.translate(bin_map)
+            print(blah)
+            play = blah
 
             # Use this to check current reference image
-            if play == "show1":
-                cv2.imshow("Reference image", self.cmpt_reference_frame)
-                cv2.waitKey(6000)
-                cv2.destroyWindow("Reference image")
-            if play == "show2":
-                cv2.imshow("Player image", self.player_reference_frame)
-                cv2.waitKey(6000)
-                cv2.destroyWindow("Player image")
-            if play == "show3":
-                self.frame_comparison(self.cmpt_reference_frame, self.player_reference_frame)
-                cv2.imshow("Diff image", self.diff)
-                cv2.waitKey(6000)
-                cv2.destroyWindow("Diff image")
-            if play == "showall":
-                cv2.imshow("computer move picture", self.cmpt_reference_frame)
-                cv2.imshow("player move picture", self.player_reference_frame)
-                cv2.waitKey(0)
-                cv2.destroyAllWindows()
+            # if play == "show1":
+            #     cv2.imshow("Reference image", self.cmpt_reference_frame)
+            #     cv2.waitKey(6000)
+            #     cv2.destroyWindow("Reference image")
+            # if play == "show2":
+            #     cv2.imshow("Player image", self.player_reference_frame)
+            #     cv2.waitKey(6000)
+            #     cv2.destroyWindow("Player image")
+            # if play == "show3":
+            #     self.frame_comparison(self.cmpt_reference_frame, self.player_reference_frame)
+            #     cv2.imshow("Diff image", self.diff)
+            #     cv2.waitKey(6000)
+            #     cv2.destroyWindow("Diff image")
+            # if play == "showall":
+            #     cv2.imshow("computer move picture", self.cmpt_reference_frame)
+            #     cv2.imshow("player move picture", self.player_reference_frame)
+            #     cv2.waitKey(0)
+            #     cv2.destroyAllWindows()
             if play == "undo":
                 self.board.pop()
                 self.board.pop()
@@ -168,9 +183,8 @@ class Main:
         parems: none
         returns: none
         """
-
-        ret, frame = cap.read()
         
+        ret, frame = cap.read()
         input("Hit enter after setting up chess board: ")
         self.cmpt_reference_frame = frame.copy()
         print("")
@@ -243,13 +257,13 @@ class Main:
         grey2 = cv2.cvtColor(player_ref, cv2.COLOR_BGR2GRAY)
 
         diff = cv2.absdiff(grey1, grey2)
-        # is_diff = np.all((diff == 0) | (diff == 255))
+
 
         # if not is_diff:
         _, threshold = cv2.threshold(diff, 30, 255, cv2.THRESH_BINARY)
         contours, _ = cv2.findContours(threshold, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
-        small_movement_bound = 100
+        small_movement_bound = 200
         bounding_box = [cv2.boundingRect(cnt) for cnt in contours if cv2.contourArea(cnt) > small_movement_bound]
 
         self.centroids = []  # Reset the centroids list
@@ -266,6 +280,10 @@ class Main:
             cv2.putText(diff, text, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
             self.diff = diff
 
+        cv2.imshow("diff pic", diff)
+        cv2.waitKey(0)
+        cv2.destroyWindow("diff pic")
+
         return 
         
         # else:
@@ -279,22 +297,13 @@ class Main:
 if __name__ == "__main__":
     # Fresh Board
     newBoard = ch.Board()
-    
-    # Mate in 2
-    #newBoard = ch.Board("1n4k1/r5np/1p4PB/p1p5/2q3P1/2P4P/8/4QRK1")
 
-    # white and black can castle on queen or king side
-    # newBoard = ch.Board("r3k2r/pppppppp/8/8/8/8/PPPPPPPP/R3K2R")
-
-    # Mate in 1
-    #newBoard = ch.Board("k7/ppp5/8/8/8/8/3Q4/4RK2")
-    # Stalemate check
-    # board = chess.Board("k7/8/8/8/8/8/5q2/7K")
-
+    map = bd.Board_Img()
+    player_move = t.translator()
     cap = cv2.VideoCapture(0)
 
     game = Main(newBoard)
-
+    
     #print(game.make_matrix(newBoard))
 
     

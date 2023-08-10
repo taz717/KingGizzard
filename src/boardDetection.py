@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 import os
 import glob
+import re
  
 # Defining the dimensions of checkerboard
 CHECKERBOARD = (7,7)
@@ -24,11 +25,9 @@ class Space:
     
     def in_space(self, x, y):
         if (self.minX <= x <= self.maxX and self.minY <= y <= self.maxY):
-            self.empty = True
-            return 
+            return True
         else:
-            self.status = False
-            return
+            return False
         
 
 # Class that will hold all the spaces and the border min x,y and max x,y
@@ -37,6 +36,7 @@ class Board_Img:
         grid = get_grid()
         self.border = [grid['1'][0][0], grid['1'][-1][0],grid['1'][0][1], grid['8'][0][1]] 
         self.spaces = self.get_space(grid)
+        self.initialize_board()
         
     def __str__(self):
         temp_dict = {key: str(value) for key, value in self.spaces.items()}
@@ -46,7 +46,7 @@ class Board_Img:
     def get_space(self, grid):
         squares = {}
         col = 0
-        names = ['A','B','C','D','E','F', 'G','H']
+        names = ['A','B','C','D','E','F','G','H']
         keyList = list(grid.keys())
         for keys in keyList[:-1]:
             col+=1
@@ -87,35 +87,50 @@ class Board_Img:
                 line = []
         return boardState
 
-    def player_move(self, centeriod):
+    def player_move(self, centeriod, moves):
         check = 0
-        empty, notEmpty = []
-        for i in self.spaces:
-            if self.spaces[i].in_space(centeriod[0]):
-                if self.spaces[i].status:
-                    notEmpty.append(i)
+        empty  = []
+        notEmpty = []
+        for key in self.spaces:
+            if self.spaces[key].in_space(centeriod[0][0], centeriod[0][1]):
+                if self.spaces[key].status:
+                    notEmpty.append(key)
                 else:
-                    empty.append(i)
+                    empty.append(key)
                 check += 1
-            if self.spaces[i].in_space(centeriod[1]):
-                if self.spaces[i].status:
-                    notEmpty.append(i)
+
+            elif (self.spaces[key].in_space(centeriod[1][0], centeriod[1][1])):
+                if self.spaces[key].status:
+                    notEmpty.append(key)
                 else:
-                    empty.append(i)
-                
+                    empty.append(key)
                 check += 1
+
             if check == 2:
                 break
+        
         if len(notEmpty) < 2:
             self.spaces[empty[0]].status = True
             self.spaces[notEmpty[0]].status = False
+        #using regex we can determine the moves that are potential caputures
+        else:
+            moves = (re.sub('[()<>,]', "", moves).split())
+            moves = moves[3:]
+            takes = [re.findall(r'x([a-h][1-8])', move)[0] for move in moves if re.findall(r'x[a-h][1-8]', move)]
+            for i in takes:
+                if (i.upper() == notEmpty[0]):
+                    self.spaces[notEmpty[1]].status = False
+                    break
+                elif (i.upper() == notEmpty[1]):
+                    self.spaces[notEmpty[0]].status = False
+                    break
         return
+    
 #HELPER FUNCTIONS TO GET GRID
-
 #Displays the points drawn within opencv            
 def draw_points(grid):
-    img = cv2.imread("images/chessboard.png")
-
+    img = cv2.imread("C:\\Users\\azn_g\\Desktop\School\\Final Project\\King Gizzard\\chessboard.png")
+    #img = cv2.imread("images/chessboard.png")
     for key in grid:
         for i in grid[key]:
             cv2.circle(img, (i[0], i[1]), 5, (0, 255, 0), 2)
@@ -168,7 +183,7 @@ def get_board(grid, avgX, avgY):
 #take picture of the 
 def get_grid():
 
-    cap = cv2.VideoCapture(4)
+    cap = cv2.VideoCapture(0)
 
     # Check if the webcam is opened successfully
     if not cap.isOpened():
@@ -188,12 +203,13 @@ def get_grid():
         # Capture a screenshot when the spacebar is pressed
         if key == ord('s'):  # Check for spacebar press
             # Save the frame as an image
-            cv2.imwrite('images/chessboard.png', frame)
+            cv2.imwrite('C:\\Users\\azn_g\\Desktop\School\\Final Project\\King Gizzard\\chessboard.png', frame)
+            #cv2.imwrite('images/chessboard.png', frame)
             print("Screenshot saved as 'screenshot.png'")
             break
 
     # Release the webcam and close the window
-    cap.release()
+
     cv2.destroyAllWindows()
 
     criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
@@ -209,7 +225,8 @@ def get_grid():
     objp[0,:,:2] = np.mgrid[0:CHECKERBOARD[0], 0:CHECKERBOARD[1]].T.reshape(-1, 2)
     
     # Extracting path of individual image stored in a given directory
-    images = glob.glob('./images/chessboard.png')
+    images = glob.glob('C:\\Users\\azn_g\\Desktop\School\\Final Project\\King Gizzard\\chessboard.png')
+    #images = glob.glob('images/chessboard.png')
     for fname in images:
         img = cv2.imread(fname)
         gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
@@ -230,7 +247,7 @@ def get_grid():
             y_row = 0
             for corner in corners:
                 x, y = corner.ravel()  # Get the x and y coordinates
-                if (y > y_row + 15):
+                if (y > y_row + 7):
                     row += 1
                     y_row = y 
                     grid[str(row)] = [(int(x),int(y))]
@@ -256,13 +273,19 @@ def get_grid():
 
 
 def test():
-    board = Board_Img()
+    test = "<LegalMoveGenerator at 0x7f6f97f0c8d0 (Nxh3+, Nf3, Nxc7#, Nxa3, exh3, g3, f3, e3, d3, c3, b3, a3, h4, g4, f4, dxe4, d4, c4, b4, a4)>"
+    board= Board_Img()
     print(str(board))
     print()
     print(board.display_board())
-    board.initialize_board()
     print()
     print()
     print(board.display_board())
+    print()
+    print()
+    cent2 = [(700, 300), (900, 700)] #random take for the grid that was made
+    board.player_move(cent2,test)
+    print(board.display_board())
 
-test()
+
+
