@@ -74,31 +74,29 @@ class Main:
             bin_map = map.display_board()
             print(bin_map)
             player_move = t.translator()
-            blah = player_move.compare_boards(player_move.boardCurrent, bin_map)
-            hf = player_move.calculate_move(blah)
-            print (hf)
-            play = input("Make a move and  ")
-
+            blah = player_move.translate(bin_map)
+            print(blah)
+            play = blah
 
             # Use this to check current reference image
-            if play == "show1":
-                cv2.imshow("Reference image", self.cmpt_reference_frame)
-                cv2.waitKey(6000)
-                cv2.destroyWindow("Reference image")
-            if play == "show2":
-                cv2.imshow("Player image", self.player_reference_frame)
-                cv2.waitKey(6000)
-                cv2.destroyWindow("Player image")
-            if play == "show3":
-                self.frame_comparison(self.cmpt_reference_frame, self.player_reference_frame)
-                cv2.imshow("Diff image", self.diff)
-                cv2.waitKey(6000)
-                cv2.destroyWindow("Diff image")
-            if play == "showall":
-                cv2.imshow("computer move picture", self.cmpt_reference_frame)
-                cv2.imshow("player move picture", self.player_reference_frame)
-                cv2.waitKey(0)
-                cv2.destroyAllWindows()
+            # if play == "show1":
+            #     cv2.imshow("Reference image", self.cmpt_reference_frame)
+            #     cv2.waitKey(6000)
+            #     cv2.destroyWindow("Reference image")
+            # if play == "show2":
+            #     cv2.imshow("Player image", self.player_reference_frame)
+            #     cv2.waitKey(6000)
+            #     cv2.destroyWindow("Player image")
+            # if play == "show3":
+            #     self.frame_comparison(self.cmpt_reference_frame, self.player_reference_frame)
+            #     cv2.imshow("Diff image", self.diff)
+            #     cv2.waitKey(6000)
+            #     cv2.destroyWindow("Diff image")
+            # if play == "showall":
+            #     cv2.imshow("computer move picture", self.cmpt_reference_frame)
+            #     cv2.imshow("player move picture", self.player_reference_frame)
+            #     cv2.waitKey(0)
+            #     cv2.destroyAllWindows()
             if play == "undo":
                 self.board.pop()
                 self.board.pop()
@@ -259,13 +257,13 @@ class Main:
         grey2 = cv2.cvtColor(player_ref, cv2.COLOR_BGR2GRAY)
 
         diff = cv2.absdiff(grey1, grey2)
-        # is_diff = np.all((diff == 0) | (diff == 255))
+
 
         # if not is_diff:
         _, threshold = cv2.threshold(diff, 30, 255, cv2.THRESH_BINARY)
         contours, _ = cv2.findContours(threshold, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
-        small_movement_bound = 100
+        small_movement_bound = 200
         bounding_box = [cv2.boundingRect(cnt) for cnt in contours if cv2.contourArea(cnt) > small_movement_bound]
 
         self.centroids = []  # Reset the centroids list
