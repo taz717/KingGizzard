@@ -73,7 +73,7 @@ class Main:
             map.player_move(self.centroids, self.board.legal_moves)
             bin_map = map.display_board()
             print(bin_map)
-            player_move = t.translator()
+            #player_move = t.translator()       I don't remember where this was suppose to go, put it in the main function creation for now, will test tomorrow
             blah = player_move.translate(bin_map)
             print(blah)
             play = blah
@@ -299,7 +299,7 @@ if __name__ == "__main__":
     newBoard = ch.Board()
 
     map = bd.Board_Img()
-
+    player_move = t.translator()
     cap = cv2.VideoCapture(0)
 
     game = Main(newBoard)
