@@ -29,9 +29,13 @@ class BoardMover:
         return
     
     def move_piece(self, origin, destination):
-        self.move(self.board_to_coord(origin))
+        x, y = self.board_to_coord(origin)
+        self.move(x, y)
+        time.sleep(3)
         self.start_magnet()
-        self.move(self.board_to_coord(destination))
+        x, y = self.board_to_coord(destination)
+        self.move(x, y)
+        time.sleep(3)
         self.stop_magnet()
         return
     
