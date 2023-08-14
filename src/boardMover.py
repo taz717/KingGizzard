@@ -39,7 +39,11 @@ class BoardMover:
         self.stop_magnet()
         return
     
-    def take_piece(self, origin):
+    def demo(self, plays):
+        input("Press Enter to start computer move")
+        for play in plays:
+            self.move_piece(play[0], play[1])
+            input("Press Enter to have computer move")
         return
     
     def send_gcode(self, gcode):
