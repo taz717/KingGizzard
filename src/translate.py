@@ -1,4 +1,12 @@
+###############################################################################
+# This file is meant to translate the binary board to a move
+#   - it does this by comparing the current board to the previous board
+#   - it then figures out the move and returns it
+#   - it also updates the previous board to the current board
+###############################################################################
 import copy
+
+###############################################################################
 
 
 class translator:
@@ -170,6 +178,10 @@ class translator:
 
         return move
 
+
+###############################################################################
+# Testing
+###############################################################################
 
 if __name__ == "__main__":
     normalBoardBinMove = [
