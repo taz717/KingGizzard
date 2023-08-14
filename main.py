@@ -1,14 +1,28 @@
+###############################################################################
+# This is the main file for the chess engine. It will run the game and
+# call the other files as needed.
+###############################################################################
+
+# SRC files
+
 from src import kingGizzard as kg
 from src import boardDetection as bd
 from src import boardMover as bm
 from src import translate as t
 
+# EXTERNAL files
+
 import chess as ch
 import cv2
 import time
 
+# GLOBALS
 
 numToLetterDict = {1: "A", 2: "B", 3: "C", 4: "D", 5: "E", 6: "F", 7: "G", 8: "H"}
+
+###############################################################################
+# Main class
+###############################################################################
 
 
 class Main:
@@ -31,7 +45,7 @@ class Main:
         self.diff = None
         self.cvBoard = None
         self.centroids = []
-    
+
     ## play player move
     def play_player_move(self, cap):
         """
@@ -52,29 +66,30 @@ class Main:
 
             print("""To undo your last move, type "undo".""")
 
-
-
             # EDITORS NOTES
             # hit a key after player move, take picture
             # send to frame_comparison and get diff
             # use diff to find movement using boardDetection graph
             # use movement to find play using translator
-            
+
             input("Make a move and hit enter: ")
-    
+
             _, self.player_reference_frame = cap.read()
-            #testing purposes
-            #cv2.imshow("reference", self.cmpt_reference_frame)
-            #cv2.imshow("player move", self.player_reference_frame)
+            # TODO DELETE LATER @GORDAN
+            # testing purposes
+            # cv2.imshow("reference", self.cmpt_reference_frame)
+            # cv2.imshow("player move", self.player_reference_frame)
             # cv2.waitKey(0)
             # cv2.destroyAllWindows()
             print(map.display_board())
-            self.frame_comparison(self.cmpt_reference_frame, self.player_reference_frame)
-            
+            self.frame_comparison(
+                self.cmpt_reference_frame, self.player_reference_frame
+            )
+
             map.player_move(self.centroids, self.board.legal_moves)
             bin_map = map.display_board()
             print(bin_map)
-            #player_move = t.translator()       I don't remember where this was suppose to go, put it in the main function creation for now, will test tomorrow
+            # player_move = t.translator()       I don't remember where this was suppose to go, put it in the main function creation for now, will test tomorrow
             blah = player_move.translate(bin_map)
             print(blah)
             play = blah
@@ -138,13 +153,13 @@ class Main:
         parems: matrix1 (2d array), matrix2 (2d array)
         returns: vals (list)
         """
-    
+
         vals = []
         for i in range(len(matrix1)):
             for j in range(len(matrix1)):
                 if matrix1[i][j] != matrix2[i][j]:
                     vals.append(numToLetterDict[j + 1] + str(8 - i))
-                
+
         return vals
 
     ## play king gizzard move
@@ -155,7 +170,6 @@ class Main:
         returns: none but it does add the engine's move to
         the board object
         """
-
 
         win = True
         engine = kg.KingGizzard(self.board, maxDepth, color)
@@ -183,13 +197,12 @@ class Main:
         parems: none
         returns: none
         """
-        
+
         ret, frame = cap.read()
         input("Hit enter after setting up chess board: ")
         self.cmpt_reference_frame = frame.copy()
         print("")
 
-        
         ## get opponent color
         color = None
         while color not in ["w", "b"]:
@@ -222,11 +235,6 @@ class Main:
                 previousBoard = self.make_matrix(self.board)
                 self.player_engine_move(maxDepth, ch.BLACK, cap)
                 vals = self.compare_boards(previousBoard, self.make_matrix(self.board))
-                ## TODO SEND VALS TO ARDUINO TO MOVE PIECES
-                # Really, should be sending vals to translator,
-                # then from there, making adjustments to the
-                # board on the translator as appropriate (confirming it from
-                # visual data from openCV image)
                 print(vals)
                 boardMover.move_piece(vals[0], vals[1])
 
@@ -250,22 +258,25 @@ class Main:
         cv2.destroyAllWindows()
         return self.gameState
 
-    
     def frame_comparison(self, cmpt_ref, player_ref):
-
         # Pull reference frame here, and process that for the greyscale
         grey1 = cv2.cvtColor(cmpt_ref, cv2.COLOR_BGR2GRAY)
         grey2 = cv2.cvtColor(player_ref, cv2.COLOR_BGR2GRAY)
 
         diff = cv2.absdiff(grey1, grey2)
 
-
         # if not is_diff:
         _, threshold = cv2.threshold(diff, 30, 255, cv2.THRESH_BINARY)
-        contours, _ = cv2.findContours(threshold, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        contours, _ = cv2.findContours(
+            threshold, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE
+        )
 
         small_movement_bound = 200
-        bounding_box = [cv2.boundingRect(cnt) for cnt in contours if cv2.contourArea(cnt) > small_movement_bound]
+        bounding_box = [
+            cv2.boundingRect(cnt)
+            for cnt in contours
+            if cv2.contourArea(cnt) > small_movement_bound
+        ]
 
         self.centroids = []  # Reset the centroids list
 
@@ -274,25 +285,32 @@ class Main:
             centroid_y = y + (h // 2)
             centroid = (centroid_x, centroid_y)
             self.centroids.append(centroid)
-            self.centroids = self.centroids[-2:] #only stores the last 2 centroids
+            self.centroids = self.centroids[-2:]  # only stores the last 2 centroids
             cv2.circle(diff, centroid, 2, (255, 255, 255), 1)
             cv2.rectangle(diff, (x, y), (x + w, y + h), (155, 155, 155), 1)
             text = f"Centroid: {centroid}"
-            cv2.putText(diff, text, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
+            cv2.putText(
+                diff,
+                text,
+                (x, y - 10),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                0.5,
+                (255, 255, 255),
+                1,
+            )
             self.diff = diff
 
         cv2.imshow("diff pic", diff)
         cv2.waitKey(0)
         cv2.destroyWindow("diff pic")
 
-        return 
-        
+        return
+
         # else:
         #     print("No visible change")
         #     return None
 
         # return
-
 
 
 if __name__ == "__main__":
@@ -303,18 +321,16 @@ if __name__ == "__main__":
     player_move = t.translator()
     cap = cv2.VideoCapture(0)
 
-
     port = input("Enter port: ")
     if port == "":
-        boardMover = bm.BoardMover("COM0" , 115200, True)
+        boardMover = bm.BoardMover("COM0", 115200, True)
     else:
         boardMover = bm.BoardMover(port, 115200, False)
 
     game = Main(newBoard)
-    
-    #print(game.make_matrix(newBoard))
 
-    
+    # print(game.make_matrix(newBoard))
+
     # print(game.make_matrix(newBoard))
     game.start_game(cap)
 
@@ -322,7 +338,4 @@ if __name__ == "__main__":
         game.board.reset()
         game.start_game(cap)
 
-
-
     print("Thanks for playing!")
-

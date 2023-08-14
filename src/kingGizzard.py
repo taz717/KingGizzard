@@ -1,5 +1,16 @@
+###############################################################################
+# This file contains the King Gizzard chess engine
+#   - King Gizzard is a chess engine that uses the minimax algorithm
+#    to evaluate the best move for the engine.
+#  - It uses the Hans Berliner system to evaluate the value of a piece
+#    on a square
+#  - It uses alpha-beta pruning to reduce the number of nodes to be evaluated
+###############################################################################
+
 import chess as ch
 import random as rd
+
+###############################################################################
 
 
 class KingGizzard:
@@ -177,3 +188,5 @@ class KingGizzard:
         else:
             return move
 
+
+###############################################################################
