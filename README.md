@@ -54,8 +54,8 @@ Overall, it works, but the project will be retired until the team decides to mee
 
 ### Credits
 Credits to members not officially recognized as the team go to:
- - Dr. Davis @MacEwan
- - Kareem Ali @HackathonMember 
- - Rj Forjie @HackathonMember
- - Ali Muneer @HackathonMember
- - Eric Peterson @HackathonMember
+- Dr. Davis @MacEwan
+- Kareem Ali @HackathonMember 
+- Rj Forjie @HackathonMember
+- Ali Muneer @HackathonMember
+- Eric Peterson @HackathonMember
